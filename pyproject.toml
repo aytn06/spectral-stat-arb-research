@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spectral-stat-arb-research"
+version = "0.1.0"
+description = "Research-grade spectral signal extraction pipeline for cross-sectional statistical arbitrage."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26,<3",
+    "pandas>=2.2,<3",
+    "matplotlib>=3.8,<4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<9",
+]
+
+[project.urls]
+Repository = "https://github.com/aytn06/spectral-stat-arb-research"
+
+[project.scripts]
+statarb-backtest = "src.run_backtest:main"
+statarb-plots = "src.make_plots:main"
+statarb-artifacts = "src.generate_research_artifacts:main"
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

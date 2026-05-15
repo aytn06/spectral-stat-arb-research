@@ -1,0 +1,3 @@
+method,reported_walk_forward_sharpe,max_drawdown,beta_spy,kept_in_final,notes
+raw_pca_residual,0.80,NA,NA,no,Naive fixed-rank PCA residualization under identical constraints
+rmt_filtered_residual,1.30,-0.08,<0.05,yes,Marchenko-Pastur spectral filtering improved the walk-forward result in the preserved project materials

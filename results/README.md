@@ -1,0 +1,18 @@
+# Committed Results
+
+Public benchmark artifacts:
+
+- `performance_summary.csv`
+- `final_performance_summary.csv`
+- `model_selection_summary.csv`
+- `factor_diagnostics.csv`
+- `cost_sensitivity.csv`
+- `parameter_sensitivity.csv`
+- `regime_summary.csv`
+- `public_data_split.csv`
+
+Preserved original-project summaries:
+
+- `original_project_performance_summary.csv`
+- `original_project_method_summary.csv`
+- `original_project_cost_sensitivity.csv`

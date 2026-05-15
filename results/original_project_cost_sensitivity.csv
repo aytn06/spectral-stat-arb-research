@@ -1,0 +1,2 @@
+strategy,cost_bps,walk_forward_sharpe,notes
+rmt_filtered_residual,5,1.30,Preserved reported result from the original Georgia Tech project under 5 bps one-way costs
