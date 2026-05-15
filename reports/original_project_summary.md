@@ -1,6 +1,7 @@
 # Original Georgia Tech Project Summary
 
-This note summarizes the original Georgia Tech project that the public repo is based on.
+This note summarizes the original Georgia Tech project that the public repo is
+based on.
 
 The preserved project materials report:
 
@@ -14,7 +15,8 @@ The public repo should be read as:
 1. a reproducible benchmark implementation of the same workflow
 2. a preserved summary of the original project result
 
-It should not be read as a claim that the committed public benchmark panel reproduces the exact original historical dataset.
+It should not be read as a claim that the committed public benchmark panel
+reproduces the exact original historical dataset.
 
 A contemporaneous claim snapshot is also preserved in
 [original_project_evidence/preserved_cv_project_excerpt.md](original_project_evidence/preserved_cv_project_excerpt.md).

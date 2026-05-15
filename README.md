@@ -15,14 +15,15 @@ The public repo includes:
 
 ## Reviewer Takeaway
 
-This repository is intended to show the actual research process behind the
-project: rolling covariance estimation, residual extraction, no-lookahead weight
-application, turnover costs, beta control, and structured evaluation.
+This repository is a stylized, reproducible benchmark for testing PCA versus
+RMT-filtered residual extraction in a cross-sectional stat-arb setting.
 
-The public benchmark panel is a reproducible structured sample, not the original
-historical research dataset. The original Georgia Tech project result is
-documented separately and should not be conflated with the public benchmark
-numbers.
+The public benchmark uses synthetic/structured equity data so that the
+methodology can be inspected without redistributing private historical data. It
+is not claimed to establish a live tradable edge or reproduce the original
+historical backtest. The goal is to isolate the statistical question: whether
+Marchenko-Pastur filtering can produce cleaner residuals and more stable
+mean-reversion signals than naive fixed-rank PCA under controlled conditions.
 
 ## Research Question
 
@@ -136,6 +137,24 @@ Why this benchmark exists:
 - It does **not** claim to replicate live market microstructure or the original
   Georgia Tech equity panel.
 
+## Why This Benchmark Is Still Useful
+
+The synthetic benchmark is designed to isolate the covariance-denoising problem
+rather than claim live trading performance.
+
+In real equity stat-arb research, the key difficulty is that the empirical
+covariance matrix is noisy when the number of assets is large relative to the
+lookback window. Naive PCA can remove unstable sample eigenvectors or leave
+noisy common components in the residuals. The benchmark creates a controlled
+environment with latent market, style, and sector factors plus residual
+mean-reversion structure, allowing us to test whether RMT filtering improves
+residual construction under known finite-sample noise.
+
+The relevant comparison is not whether the strategy is production-ready, but
+whether the RMT-filtered pipeline behaves better than the raw PCA baseline
+under identical data, costs, neutrality constraints, and walk-forward
+validation.
+
 ## Included Methods
 
 | Strategy | Description |
@@ -154,6 +173,20 @@ The committed artifact pack exposes that selected sleeve twice:
 - once under its method label, `rmt_filtered_residual`
 - once as `final_research_portfolio`, which is the selected validation winner
   carried into the review-facing summary tables
+
+## Method Flow
+
+```mermaid
+flowchart TD
+    A["Equity return panel"] --> B["Rolling sample covariance"]
+    B --> C["Raw PCA residuals"]
+    B --> D["Marchenko-Pastur eigenvalue filtering"]
+    D --> E["RMT-filtered residuals"]
+    C --> F["Residual z-score signals"]
+    E --> F
+    F --> G["Dollar-neutral / beta-controlled portfolio"]
+    G --> H["Walk-forward net returns after costs"]
+```
 
 ## Headline Public Benchmark Results
 
@@ -183,24 +216,34 @@ Two notable findings from the committed artifact pack:
 - cost sensitivity is severe: holdout Sharpe drops from `5.65` at `1` bp to
   `1.76` at `5` bps and turns negative at `10` bps
 
+## Cost Sensitivity Interpretation
+
+The public benchmark is intentionally turnover-sensitive because residual
+mean-reversion strategies trade frequently. The cost-sensitivity table shows
+that the RMT sleeve performs well at `1`-`5` bps but deteriorates under higher
+cost assumptions. This is a limitation, not a production claim.
+
+In a real implementation, the next research step would be to reduce turnover
+through slower signal decay, thresholded rebalancing, liquidity-aware position
+sizing, and explicit market-impact modeling.
+
 ## What This Public Benchmark Does Not Prove
 
-This public benchmark does **not** prove a live tradable stat-arb edge.
+This public benchmark does not prove a live tradable stat-arb edge.
 
-It is designed to test whether the code correctly implements a stylized
-PCA-versus-RMT residual-denoising experiment under neutralization and turnover
-costs. It should not be read as proof that the same performance would survive:
+Important limitations:
 
-- live market microstructure
-- borrow and short-availability constraints
-- market impact and slippage
-- capacity limits
-- exchange-specific execution frictions
-- cross-sectional universe changes and delistings
-
-The severe cost sensitivity in the public benchmark is part of the point: the
-signal-extraction comparison is inspectable, but the strategy is not
-production-ready from this repo alone.
+- The public panel is synthetic/structured, not a point-in-time historical
+  equity universe.
+- The benchmark does not model borrow fees, short availability, capacity,
+  market impact, or intraday execution.
+- Transaction costs are simplified as a fixed one-way cost on turnover.
+- The RMT sleeve is highly cost-sensitive; performance deteriorates under
+  larger cost assumptions.
+- The benchmark is designed to test residual-denoising methodology, not to
+  estimate deployable alpha.
+- The original historical-data project is summarized separately, but raw
+  historical data and exact private-run artifacts are not redistributed.
 
 ## Key Artifacts
 
@@ -234,3 +277,17 @@ The original Georgia Tech project is summarized in:
 - Capacity, borrow, and impact are not modeled.
 - The public repo should be read as a reproducible research artifact, not a
   direct production-trading claim.
+
+## Next Research Steps
+
+Natural extensions:
+
+1. Replace the synthetic panel with a point-in-time liquid U.S. equity
+   universe.
+2. Add sector-neutral and liquidity-aware constraints.
+3. Model borrow fees, spreads, and market impact.
+4. Compare Marchenko-Pastur filtering with Ledoit-Wolf shrinkage, nonlinear
+   shrinkage, and robust covariance estimators.
+5. Study turnover reduction through thresholded rebalancing and signal decay.
+6. Evaluate stability across different lookback windows, universe sizes, and
+   market regimes.

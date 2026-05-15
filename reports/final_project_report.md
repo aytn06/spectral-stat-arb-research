@@ -6,7 +6,8 @@ Can Marchenko-Pastur filtering improve a residual mean-reversion stat-arb sleeve
 
 ## 2. Public Benchmark
 
-The public repo uses a structured benchmark panel from `2019-01-02` through `2025-06-30`, split into train / validation / holdout windows.
+The public repo uses a structured benchmark panel from `2019-01-02` through
+`2025-06-30`, split into train / validation / holdout windows.
 
 The benchmark uses `24` synthetic equities across `6` sectors and is generated
 by `src/sample_data.py`. The full construction note is documented in
@@ -51,11 +52,29 @@ The public benchmark is not the original Georgia Tech dataset. It is a reproduci
 
 ## 8. Limitation
 
-The benchmark is structured rather than live-market data, and the sleeve remains strongly cost-sensitive.
+The benchmark is structured rather than live-market data, and the sleeve remains
+strongly cost-sensitive.
 
 ## 9. What This Public Benchmark Does Not Prove
 
 This benchmark does not prove a live tradable stat-arb edge. It is a stylized
 implementation of the residual-denoising experiment, not a production-ready
-capacity or execution study. Borrow, impact, short frictions, and realistic
-universe evolution are not fully modeled here.
+capacity or execution study.
+
+Important limitations:
+
+- the public panel is synthetic/structured, not a point-in-time historical
+  equity universe
+- borrow, impact, short frictions, and realistic universe evolution are not
+  fully modeled
+- transaction costs are simplified to a fixed one-way turnover penalty
+- the sleeve is highly cost-sensitive, especially above `5` bps
+- the benchmark is intended to test residual-denoising methodology rather than
+  estimate deployable alpha
+
+## 10. Next Steps
+
+- test the same workflow on a point-in-time liquid U.S. equity universe
+- compare RMT filtering with covariance shrinkage alternatives
+- reduce turnover with thresholded rebalancing and slower signal decay
+- add market-impact and liquidity-aware portfolio rules
