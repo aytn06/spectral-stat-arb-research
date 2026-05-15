@@ -249,6 +249,7 @@ Important limitations:
 
 - [results/final_performance_summary.csv](results/final_performance_summary.csv)
 - [results/model_selection_summary.csv](results/model_selection_summary.csv)
+- [figures/pca_vs_rmt_workflow.png](figures/pca_vs_rmt_workflow.png)
 - [figures/final_equity_curve.png](figures/final_equity_curve.png)
 - [figures/final_drawdown.png](figures/final_drawdown.png)
 - [figures/rolling_sharpe.png](figures/rolling_sharpe.png)
@@ -267,6 +268,14 @@ The original Georgia Tech project is summarized in:
 - [results/original_project_cost_sensitivity.csv](results/original_project_cost_sensitivity.csv)
 - [reports/original_project_evidence/README.md](reports/original_project_evidence/README.md)
 - [reports/original_project_evidence/preserved_cv_project_excerpt.md](reports/original_project_evidence/preserved_cv_project_excerpt.md)
+
+The current evidence hierarchy is:
+
+1. runnable public benchmark code and committed artifacts
+2. preserved written summaries of the original Georgia Tech result
+3. contemporaneous external claim snapshots
+
+What is still missing is a raw original-project output table or screenshot.
 
 ## Limitations
 

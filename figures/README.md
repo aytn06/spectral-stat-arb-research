@@ -2,6 +2,7 @@
 
 The main public-benchmark figures are:
 
+- `pca_vs_rmt_workflow.png`
 - `final_equity_curve.png`
 - `final_drawdown.png`
 - `rolling_sharpe.png`
