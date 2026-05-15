@@ -16,3 +16,4 @@ Preserved original-project summaries:
 - `original_project_performance_summary.csv`
 - `original_project_method_summary.csv`
 - `original_project_cost_sensitivity.csv`
+- `original_historical_performance_summary.csv`

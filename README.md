@@ -266,9 +266,12 @@ Important limitations:
 The original Georgia Tech project is summarized in:
 
 - [reports/original_project_summary.md](reports/original_project_summary.md)
+- [reports/original_project_evidence/original_historical_run_summary.md](reports/original_project_evidence/original_historical_run_summary.md)
+- [reports/original_project_evidence/original_results_table.md](reports/original_project_evidence/original_results_table.md)
 - [results/original_project_performance_summary.csv](results/original_project_performance_summary.csv)
 - [results/original_project_method_summary.csv](results/original_project_method_summary.csv)
 - [results/original_project_cost_sensitivity.csv](results/original_project_cost_sensitivity.csv)
+- [results/original_historical_performance_summary.csv](results/original_historical_performance_summary.csv)
 - [reports/original_project_evidence/README.md](reports/original_project_evidence/README.md)
 - [reports/original_project_evidence/preserved_cv_project_excerpt.md](reports/original_project_evidence/preserved_cv_project_excerpt.md)
 

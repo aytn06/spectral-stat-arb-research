@@ -26,6 +26,7 @@ figures/*.png
 !figures/cost_sensitivity.png
 !figures/parameter_sensitivity_heatmap.png
 !figures/factor_count_timeline.png
+!figures/pca_vs_rmt_workflow.png
 results/*.csv
 !results/final_performance_summary.csv
 !results/cost_sensitivity.csv
@@ -38,6 +39,7 @@ results/*.csv
 !results/original_project_performance_summary.csv
 !results/original_project_method_summary.csv
 !results/original_project_cost_sensitivity.csv
+!results/original_historical_performance_summary.csv
 !data/sample_prices.csv
 !data/README.md
 !figures/README.md
