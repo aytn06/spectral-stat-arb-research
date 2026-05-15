@@ -196,9 +196,9 @@ flowchart TD
 | RMT-Filtered Residual | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
 | Final Research Portfolio | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
 
-The public benchmark is useful for one clear conclusion: naive fixed-rank PCA
-breaks down out of sample, while the RMT-filtered sleeve remains positive after
-costs and materially improves drawdown and beta stability.
+In this public benchmark, naive fixed-rank PCA underperforms out of sample,
+while the RMT-filtered sleeve remains positive after costs and shows better
+drawdown and beta behavior under the same portfolio rules.
 
 ## Public Robustness Checks
 
@@ -221,12 +221,10 @@ Two notable findings from the committed artifact pack:
 The public benchmark is intentionally turnover-sensitive because residual
 mean-reversion strategies trade frequently. The cost-sensitivity table shows
 that the RMT sleeve performs well at `1`-`5` bps but deteriorates under higher
-cost assumptions. This is a limitation, not a production claim.
-
-The public benchmark is intentionally interpreted as a residual-denoising
-experiment rather than a production trading strategy; the cost-sensitivity
-results show that turnover reduction and more realistic execution modeling
-would be required before treating the signal as deployable.
+cost assumptions. The public benchmark is intentionally interpreted as a
+residual-denoising experiment rather than a production trading strategy; the
+cost-sensitivity results show that turnover reduction and more realistic
+execution modeling would be required before treating the signal as deployable.
 
 In a real implementation, the next research step would be to reduce turnover
 through slower signal decay, thresholded rebalancing, liquidity-aware position
