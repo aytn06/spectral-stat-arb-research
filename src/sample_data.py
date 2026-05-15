@@ -1,5 +1,23 @@
 from __future__ import annotations
 
+"""Generate the structured public benchmark panel for the spectral stat-arb repo.
+
+This file is intentionally explicit because the public benchmark is synthetic
+rather than a redistributed historical equity universe. The generator creates a
+finite-sample covariance estimation problem with:
+
+- one market state
+- one style state
+- one sector factor per sector
+- one sector-level mean-reversion state
+- asset-specific residual dynamics
+- a common cross-sectional residual shock
+
+The goal is not to claim a live tradable edge. The goal is to make the
+PCA-versus-RMT residual-denoising comparison reproducible from a public GitHub
+repo under transparent stylized assumptions.
+"""
+
 import argparse
 from pathlib import Path
 

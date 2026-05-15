@@ -1,6 +1,8 @@
 # Spectral Signal Extraction for Statistical Arbitrage
 
-Cross-sectional equity stat-arb research repository built around a Georgia Tech project on spectral denoising, residual mean reversion, and cost-aware long/short portfolio construction.
+Cross-sectional equity stat-arb research repository built around a Georgia Tech
+project on spectral denoising, residual mean reversion, and cost-aware
+long/short portfolio construction.
 
 The public repo includes:
 
@@ -13,15 +15,23 @@ The public repo includes:
 
 ## Reviewer Takeaway
 
-This repository is meant to show the actual research process behind the project: rolling covariance estimation, residual extraction, no-lookahead weight application, turnover costs, beta control, and structured evaluation.
+This repository is intended to show the actual research process behind the
+project: rolling covariance estimation, residual extraction, no-lookahead weight
+application, turnover costs, beta control, and structured evaluation.
 
-The public benchmark panel is a reproducible structured sample, not the original historical research dataset. The original Georgia Tech project result is documented separately and should not be conflated with the public benchmark numbers.
+The public benchmark panel is a reproducible structured sample, not the original
+historical research dataset. The original Georgia Tech project result is
+documented separately and should not be conflated with the public benchmark
+numbers.
 
 ## Research Question
 
-> Does Marchenko-Pastur filtering improve residual mean-reversion signals relative to naive fixed-rank PCA once the portfolio is forced to stay dollar-neutral, beta-controlled, and cost-aware?
+> Does Marchenko-Pastur filtering improve residual mean-reversion signals
+> relative to naive fixed-rank PCA once the portfolio is forced to stay
+> dollar-neutral, beta-controlled, and cost-aware?
 
-This is a research backtest, not a production trading system. The repo emphasizes:
+This is a research backtest, not a production trading system. The repo
+emphasizes:
 
 - shifted weights to avoid accidental look-ahead
 - explicit validation / holdout separation for the public benchmark
@@ -31,7 +41,9 @@ This is a research backtest, not a production trading system. The repo emphasize
 
 ## Public Artifact vs. Original Georgia Tech Project
 
-The original project behind the CV line was completed at Georgia Tech from **August 2024 to May 2025** and used a broader historical equity panel that is not redistributed here.
+The original project behind the CV line was completed at Georgia Tech from
+**August 2024 to May 2025** and used a broader historical equity panel that is
+not redistributed here.
 
 The public repo instead ships a **structured benchmark panel**:
 
@@ -96,7 +108,33 @@ The committed public benchmark uses this split:
 | Validation | 2022-01-03 to 2022-12-30 | Select the final spectral sleeve |
 | Holdout | 2023-01-02 to 2025-06-30 | Final out-of-sample evaluation |
 
-The original Georgia Tech project was closer to a rolling walk-forward study; the public repo uses a cleaner validation / holdout split because it is easier to audit from GitHub.
+The original Georgia Tech project was closer to a rolling walk-forward study.
+The public repo uses a cleaner validation / holdout split because it is easier
+to audit from GitHub.
+
+## Public Benchmark Data Construction
+
+The public benchmark is intentionally transparent and stylized. It is generated
+by [src/sample_data.py](src/sample_data.py) and documented in
+[reports/public_benchmark_data_construction.md](reports/public_benchmark_data_construction.md).
+
+Headline construction choices:
+
+- `24` synthetic equities across `6` sectors with `4` names per sector
+- `1,694` business dates from `2019-01-02` through `2025-06-30`
+- one market factor, one style factor, and one sector factor per sector
+- a separate sector-level mean-reversion state that creates residual structure
+- asset-specific idiosyncratic residual processes plus a cross-sectional common
+  shock
+- a benchmark series generated from the market and style states
+
+Why this benchmark exists:
+
+- It creates a finite-sample covariance-estimation problem in which naive
+  fixed-rank PCA can overfit unstable eigenmodes.
+- It makes the residual-denoising question reproducible from a public repo.
+- It does **not** claim to replicate live market microstructure or the original
+  Georgia Tech equity panel.
 
 ## Included Methods
 
@@ -114,7 +152,8 @@ The selected public spectral sleeve is currently:
 The committed artifact pack exposes that selected sleeve twice:
 
 - once under its method label, `rmt_filtered_residual`
-- once as `final_research_portfolio`, which is the selected validation winner carried into the review-facing summary tables
+- once as `final_research_portfolio`, which is the selected validation winner
+  carried into the review-facing summary tables
 
 ## Headline Public Benchmark Results
 
@@ -124,7 +163,9 @@ The committed artifact pack exposes that selected sleeve twice:
 | RMT-Filtered Residual | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
 | Final Research Portfolio | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
 
-The public benchmark is useful for one clear conclusion: naive fixed-rank PCA breaks down out of sample, while the RMT-filtered sleeve remains positive after costs and materially improves drawdown and beta stability.
+The public benchmark is useful for one clear conclusion: naive fixed-rank PCA
+breaks down out of sample, while the RMT-filtered sleeve remains positive after
+costs and materially improves drawdown and beta stability.
 
 ## Public Robustness Checks
 
@@ -137,8 +178,29 @@ The public artifact pack includes:
 
 Two notable findings from the committed artifact pack:
 
-- the selected RMT sleeve stays positive under `rolling_window ±20%`, with holdout Sharpe between `1.73` and `1.77`
-- cost sensitivity is severe: holdout Sharpe drops from `5.65` at `1` bp to `1.76` at `5` bps and turns negative at `10` bps
+- the selected RMT sleeve stays positive under `rolling_window ±20%`, with
+  holdout Sharpe between `1.73` and `1.77`
+- cost sensitivity is severe: holdout Sharpe drops from `5.65` at `1` bp to
+  `1.76` at `5` bps and turns negative at `10` bps
+
+## What This Public Benchmark Does Not Prove
+
+This public benchmark does **not** prove a live tradable stat-arb edge.
+
+It is designed to test whether the code correctly implements a stylized
+PCA-versus-RMT residual-denoising experiment under neutralization and turnover
+costs. It should not be read as proof that the same performance would survive:
+
+- live market microstructure
+- borrow and short-availability constraints
+- market impact and slippage
+- capacity limits
+- exchange-specific execution frictions
+- cross-sectional universe changes and delistings
+
+The severe cost sensitivity in the public benchmark is part of the point: the
+signal-extraction comparison is inspectable, but the strategy is not
+production-ready from this repo alone.
 
 ## Key Artifacts
 
@@ -165,7 +227,10 @@ The original Georgia Tech project is summarized in:
 
 ## Limitations
 
-- The public benchmark is structured and reproducible, not a redistributed live market dataset.
-- Execution is simplified to close-to-close returns with one-way turnover costs.
+- The public benchmark is structured and reproducible, not a redistributed live
+  market dataset.
+- Execution is simplified to close-to-close returns with one-way turnover
+  costs.
 - Capacity, borrow, and impact are not modeled.
-- The public repo should be read as a reproducible research artifact, not a direct production-trading claim.
+- The public repo should be read as a reproducible research artifact, not a
+  direct production-trading claim.

@@ -8,6 +8,10 @@ Can Marchenko-Pastur filtering improve a residual mean-reversion stat-arb sleeve
 
 The public repo uses a structured benchmark panel from `2019-01-02` through `2025-06-30`, split into train / validation / holdout windows.
 
+The benchmark uses `24` synthetic equities across `6` sectors and is generated
+by `src/sample_data.py`. The full construction note is documented in
+[public_benchmark_data_construction.md](public_benchmark_data_construction.md).
+
 ## 3. Methods
 
 - sector-neutral residual baseline
@@ -48,3 +52,10 @@ The public benchmark is not the original Georgia Tech dataset. It is a reproduci
 ## 8. Limitation
 
 The benchmark is structured rather than live-market data, and the sleeve remains strongly cost-sensitive.
+
+## 9. What This Public Benchmark Does Not Prove
+
+This benchmark does not prove a live tradable stat-arb edge. It is a stylized
+implementation of the residual-denoising experiment, not a production-ready
+capacity or execution study. Borrow, impact, short frictions, and realistic
+universe evolution are not fully modeled here.
