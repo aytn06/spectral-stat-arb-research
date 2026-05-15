@@ -19,3 +19,4 @@ The preserved original Georgia Tech project summary is in:
 
 - [original_project_summary.md](original_project_summary.md)
 - [../results/original_project_performance_summary.csv](../results/original_project_performance_summary.csv)
+- [original_project_evidence/preserved_cv_project_excerpt.md](original_project_evidence/preserved_cv_project_excerpt.md)

@@ -15,3 +15,6 @@ The public repo should be read as:
 2. a preserved summary of the original project result
 
 It should not be read as a claim that the committed public benchmark panel reproduces the exact original historical dataset.
+
+A contemporaneous claim snapshot is also preserved in
+[original_project_evidence/preserved_cv_project_excerpt.md](original_project_evidence/preserved_cv_project_excerpt.md).

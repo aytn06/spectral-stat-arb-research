@@ -138,24 +138,34 @@ def main() -> None:
     summary = summarize_by_split(backtests, benchmark_returns=panel.benchmark_returns, config=config)
     summary.to_csv(results_dir / "performance_summary.csv", index=False)
 
+    final_cols = [
+        "strategy",
+        "display_name",
+        "validation_sharpe",
+        "holdout_sharpe",
+        "validation_total_return",
+        "holdout_total_return",
+        "holdout_max_drawdown",
+        "holdout_ann_vol",
+        "holdout_avg_turnover",
+        "holdout_beta_spy",
+    ]
     final_table = model_selection.loc[
-        model_selection["strategy"].isin(
-            ["sector_baseline", "raw_pca_residual", "rmt_filtered_residual", selected_strategy]
-        ),
-        [
-            "strategy",
-            "display_name",
-            "validation_sharpe",
-            "holdout_sharpe",
-            "validation_total_return",
-            "holdout_total_return",
-            "holdout_max_drawdown",
-            "holdout_ann_vol",
-            "holdout_avg_turnover",
-            "holdout_beta_spy",
-        ],
+        model_selection["strategy"].isin(["sector_baseline", "raw_pca_residual", "rmt_filtered_residual"]),
+        final_cols,
     ].copy()
+    final_table["source_strategy"] = final_table["strategy"]
     final_table["selected_on_validation"] = final_table["strategy"].eq(selected_strategy)
+    final_table["artifact_role"] = "benchmark_method"
+
+    selected_alias = model_selection.loc[model_selection["strategy"] == selected_strategy, final_cols].copy()
+    selected_alias["source_strategy"] = selected_strategy
+    selected_alias["strategy"] = "final_research_portfolio"
+    selected_alias["display_name"] = DISPLAY_NAMES["final_research_portfolio"]
+    selected_alias["selected_on_validation"] = True
+    selected_alias["artifact_role"] = "selected_portfolio_alias"
+
+    final_table = pd.concat([final_table, selected_alias], ignore_index=True)
     final_table["cost_assumption_bps"] = int(config.transaction_cost * 10_000)
     final_table.to_csv(results_dir / "final_performance_summary.csv", index=False)
 

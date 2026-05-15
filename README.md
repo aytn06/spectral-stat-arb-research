@@ -111,6 +111,11 @@ The selected public spectral sleeve is currently:
 
 - `rmt_filtered_residual`
 
+The committed artifact pack exposes that selected sleeve twice:
+
+- once under its method label, `rmt_filtered_residual`
+- once as `final_research_portfolio`, which is the selected validation winner carried into the review-facing summary tables
+
 ## Headline Public Benchmark Results
 
 | Strategy | Validation Sharpe | Holdout Sharpe | Holdout Max DD | Holdout Beta | Holdout Turnover | Cost |
@@ -156,6 +161,7 @@ The original Georgia Tech project is summarized in:
 - [results/original_project_method_summary.csv](results/original_project_method_summary.csv)
 - [results/original_project_cost_sensitivity.csv](results/original_project_cost_sensitivity.csv)
 - [reports/original_project_evidence/README.md](reports/original_project_evidence/README.md)
+- [reports/original_project_evidence/preserved_cv_project_excerpt.md](reports/original_project_evidence/preserved_cv_project_excerpt.md)
 
 ## Limitations
 
