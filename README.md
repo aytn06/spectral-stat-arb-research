@@ -223,6 +223,11 @@ mean-reversion strategies trade frequently. The cost-sensitivity table shows
 that the RMT sleeve performs well at `1`-`5` bps but deteriorates under higher
 cost assumptions. This is a limitation, not a production claim.
 
+The public benchmark is intentionally interpreted as a residual-denoising
+experiment rather than a production trading strategy; the cost-sensitivity
+results show that turnover reduction and more realistic execution modeling
+would be required before treating the signal as deployable.
+
 In a real implementation, the next research step would be to reduce turnover
 through slower signal decay, thresholded rebalancing, liquidity-aware position
 sizing, and explicit market-impact modeling.

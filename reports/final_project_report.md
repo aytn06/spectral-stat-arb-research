@@ -46,6 +46,11 @@ Final public selection is validation-only and restricted to the spectral sleeves
 - `5` bps cost: holdout Sharpe `1.76`
 - `10` bps cost: holdout Sharpe `-3.31`
 
+The public benchmark is intentionally interpreted as a residual-denoising
+experiment rather than a production trading strategy; the cost-sensitivity
+results show that turnover reduction and more realistic execution modeling
+would be required before treating the signal as deployable.
+
 ## 7. Relationship to Original Project
 
 The public benchmark is not the original Georgia Tech dataset. It is a reproducible benchmark implementation of the same research question. The original project summary is documented separately in [original_project_summary.md](original_project_summary.md).
