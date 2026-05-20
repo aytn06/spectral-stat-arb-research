@@ -61,6 +61,34 @@ structure, or remove the wrong directions entirely. The project asks whether
 Marchenko--Pastur-style filtering can reduce that problem enough to matter in a
 trading workflow.
 
+\section*{Background Linear Algebra Intuition}
+
+One useful way to motivate the project is through the classical
+eigenportfolio viewpoint. If \(w\) is a portfolio weight vector and
+\(\Sigma\) is the covariance matrix of asset returns, then the quadratic form
+\[
+w^\top \Sigma w
+\]
+measures the portfolio's variance. In that language, eigenvectors of
+\(\Sigma\) can be interpreted as orthogonal risk directions, and eigenvalues
+measure how much variance those directions explain.
+
+That perspective matters here for two reasons. First, it gives a concrete
+meaning to the spectrum of the covariance matrix: the largest modes are not
+abstract linear algebra objects but the dominant sources of common movement in
+the panel. Second, in broad equity data the top eigenvalue is often
+market-like, while the next few modes often capture sector or style structure.
+So even before we talk about RMT, linear algebra already tells us why a
+residualization problem exists at all: if those common modes are not removed
+carefully, the supposed stock-specific signal is polluted from the start.
+
+The key difference between this project and the older eigenportfolio story is
+the target. That classical setup asks which eigenvector one might hold as a
+portfolio. This project instead asks which spectral directions should be
+treated as common structure and stripped out before the remainder is traded as
+a residual mean-reversion signal. So the eigendecomposition is serving signal
+extraction rather than buy-and-hold allocation.
+
 \section*{The Core Research Question}
 
 The cleanest version of the question is:
@@ -153,6 +181,13 @@ above that edge are treated as significant common structure. Those selected
 directions are then used to reconstruct the common component, and the remainder
 is treated as the residual panel. In the repo, that logic lives in
 \texttt{src/spectral.py}.
+
+In the current implementation, the rolling spectral step follows a classical
+correlation-filtering convention: returns inside the window are transformed
+with \(\log(1+r)\), standardized asset by asset, and then mapped into a sample
+correlation matrix before eigendecomposition. The backtest still evaluates
+arithmetic close-to-close returns after costs; only the spectral estimation
+step uses the log-standardized input.
 
 So the new information provided by the RMT step is not a prediction about future
 returns by itself. The new information is an estimate of which spectral modes

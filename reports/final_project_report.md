@@ -22,6 +22,14 @@ by `src/sample_data.py`. The full construction note is documented in
 - log-return correlation filtering inside each rolling spectral window
 - explicit validation-window eigenspectrum and filtered-correlation artifacts
 
+Background intuition: in the classical covariance-eigendecomposition view, a
+portfolio's variance is \(w^\top \Sigma w\), eigenvectors can be interpreted as
+orthogonal risk directions, and the largest eigenvalue is often market-like.
+This project uses that lens for residual extraction rather than for long-only
+portfolio selection: the practical question is which common spectral modes
+should be removed before the remainder is traded as a residual mean-reversion
+signal.
+
 All sleeves use:
 
 - dollar-neutral long/short weights

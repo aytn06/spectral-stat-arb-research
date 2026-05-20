@@ -156,6 +156,28 @@ whether the RMT-filtered pipeline behaves better than the raw PCA baseline
 under identical data, costs, neutrality constraints, and walk-forward
 validation.
 
+## Background Intuition
+
+One useful way to motivate the project is through the older
+"eigenportfolio" viewpoint: if \(w\) is a portfolio weight vector and
+\(\Sigma\) is a covariance matrix, then the quadratic form \(w^\top \Sigma w\)
+measures the portfolio's variance. In that setting, eigenvectors of the
+covariance matrix can be read as orthogonal risk directions, and their
+eigenvalues tell us how much variance each direction explains.
+
+That viewpoint is helpful here even though this repository is not a
+buy-and-hold eigenportfolio project. In broad equity panels, the largest
+eigenvalue is often market-like, and the next few eigenvectors often reflect
+sector or style structure. The stat-arb question is then not "which
+eigenportfolio should I hold?" but rather "which common modes should I remove
+before treating the remainder as stock-specific residual signal?"
+
+This repository takes that background idea and turns it into a residualization
+workflow. Raw PCA answers the question with a fixed-rank shortcut. The
+Marchenko-Pastur filter answers it with a noise-aware spectral threshold. The
+trading sleeve is then a way to test whether the better residualization rule
+actually matters once costs and exposure controls are imposed.
+
 ## Spectral Estimation Details
 
 Inside each rolling window, the repo now follows a more classical
@@ -171,6 +193,12 @@ This does not change the backtest return convention, which remains a
 close-to-close arithmetic-return backtest. It only sharpens the spectral
 estimation step and makes the RMT filter directly inspectable through committed
 artifacts.
+
+This choice also cleanly separates two conventions that often get mixed
+together in finance writing: the background eigenportfolio story is usually
+told with linear returns, while the spectral filtering step here uses
+log-standardized inputs for the correlation estimate. The backtest itself still
+evaluates realized arithmetic returns after costs.
 
 ## Included Methods
 
