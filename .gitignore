@@ -27,6 +27,8 @@ figures/*.png
 !figures/parameter_sensitivity_heatmap.png
 !figures/factor_count_timeline.png
 !figures/pca_vs_rmt_workflow.png
+!figures/eigenvalue_filtering.png
+!figures/rmt_filtered_correlation_heatmap.png
 results/*.csv
 !results/final_performance_summary.csv
 !results/cost_sensitivity.csv
@@ -36,6 +38,9 @@ results/*.csv
 !results/public_data_split.csv
 !results/factor_diagnostics.csv
 !results/performance_summary.csv
+!results/eigenvalue_filter_diagnostics.csv
+!results/validation_window_correlation.csv
+!results/validation_window_rmt_filtered_correlation.csv
 !results/original_project_performance_summary.csv
 !results/original_project_method_summary.csv
 !results/original_project_cost_sensitivity.csv

@@ -19,6 +19,8 @@ by `src/sample_data.py`. The full construction note is documented in
 - naive fixed-rank PCA residualization
 - RMT-filtered residualization
 - conservative RMT sleeve with lower persistence and lower effective turnover
+- log-return correlation filtering inside each rolling spectral window
+- explicit validation-window eigenspectrum and filtered-correlation artifacts
 
 All sleeves use:
 
@@ -35,16 +37,16 @@ Final public selection is validation-only and restricted to the spectral sleeves
 
 | Strategy | Validation Sharpe | Holdout Sharpe | Holdout Max DD | Holdout Beta |
 |---|---:|---:|---:|---:|
-| Raw PCA Residual | `-1.04` | `-0.29` | `-5.5%` | `0.009` |
-| RMT-Filtered Residual | `1.04` | `1.76` | `-2.8%` | `-0.003` |
+| Raw PCA Residual | `-0.87` | `-0.21` | `-5.1%` | `0.011` |
+| RMT-Filtered Residual | `1.04` | `1.73` | `-2.7%` | `-0.004` |
 
 ## 6. Robustness
 
-- `rolling_window_down`: RMT holdout Sharpe `1.77`
-- `rolling_window_up`: RMT holdout Sharpe `1.73`
-- `1` bp cost: holdout Sharpe `5.65`
-- `5` bps cost: holdout Sharpe `1.76`
-- `10` bps cost: holdout Sharpe `-3.31`
+- `rolling_window_down`: RMT holdout Sharpe `1.76`
+- `rolling_window_up`: RMT holdout Sharpe `1.63`
+- `1` bp cost: holdout Sharpe `5.63`
+- `5` bps cost: holdout Sharpe `1.73`
+- `10` bps cost: holdout Sharpe `-3.36`
 
 The public benchmark is intentionally interpreted as a residual-denoising
 experiment rather than a production trading strategy; the cost-sensitivity

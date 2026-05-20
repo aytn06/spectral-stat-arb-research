@@ -10,6 +10,7 @@ if "MPLCONFIGDIR" not in os.environ:
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 
 from .metrics import drawdown_curve, equity_curve, rolling_sharpe
@@ -133,6 +134,61 @@ def plot_factor_diagnostics(diag_df: pd.DataFrame, output_path: str | Path) -> N
     plt.ylabel("Factor Count")
     plt.xlabel("Date")
     plt.legend()
+    plt.tight_layout()
+    plt.savefig(path, dpi=180)
+    plt.close()
+
+
+def plot_eigenvalue_filtering(diag_df: pd.DataFrame, output_path: str | Path) -> None:
+    path = _prepare_output(output_path)
+    methods = ["raw_pca", "rmt"]
+    labels = {"raw_pca": "Raw PCA Fixed-Rank Selection", "rmt": "RMT Edge Selection"}
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.5), sharey=True)
+
+    for ax, method in zip(axes, methods):
+        subset = diag_df[diag_df["method"] == method].sort_values("rank")
+        colors = np.where(subset["retained"], "#1f77b4", "#d9d9d9")
+        ax.bar(subset["rank"], subset["eigenvalue"], color=colors, width=0.85)
+        ax.axhline(subset["mp_upper_edge"].iloc[0], color="crimson", linestyle="--", linewidth=1.5)
+        ax.set_title(labels[method])
+        ax.set_xlabel("Eigenvalue Rank")
+        ax.set_ylabel("Eigenvalue")
+        ax.text(
+            0.98,
+            0.95,
+            f"Retained factors: {int(subset['retained'].sum())}",
+            transform=ax.transAxes,
+            ha="right",
+            va="top",
+            fontsize=9,
+            bbox={"facecolor": "white", "edgecolor": "#cccccc", "boxstyle": "round,pad=0.25"},
+        )
+
+    fig.suptitle("Validation-Window Eigenvalue Filtering")
+    plt.tight_layout()
+    plt.savefig(path, dpi=180)
+    plt.close()
+
+
+def plot_filtered_correlation_comparison(
+    original_corr: pd.DataFrame,
+    filtered_corr: pd.DataFrame,
+    output_path: str | Path,
+) -> None:
+    path = _prepare_output(output_path)
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    for ax, matrix, title in zip(
+        axes,
+        [original_corr, filtered_corr],
+        ["Original Validation Correlation", "RMT-Filtered Correlation"],
+    ):
+        im = ax.imshow(matrix, cmap="coolwarm", vmin=-1, vmax=1)
+        ax.set_xticks(range(len(matrix.columns)))
+        ax.set_xticklabels(matrix.columns, rotation=45, ha="right", fontsize=8)
+        ax.set_yticks(range(len(matrix.index)))
+        ax.set_yticklabels(matrix.index, fontsize=8)
+        ax.set_title(title)
+    fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.8)
     plt.tight_layout()
     plt.savefig(path, dpi=180)
     plt.close()

@@ -1,0 +1,331 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.95in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{array}
+
+\definecolor{accent}{RGB}{18,54,92}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+\title{\textbf{A Full Explanation of the Spectral Signal Extraction for Statistical Arbitrage Project}}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section*{Introduction}
+
+This project studies a specific problem in cross-sectional statistical
+arbitrage. The question is not whether one can write down a new theorem in
+random matrix theory, and it is not whether one can claim a magical source of
+alpha. The question is narrower and more practical: if a stat-arb signal is
+built from residual mean reversion, does the \emph{quality of residual
+construction} improve when we use a noise-aware spectral filtering rule rather
+than a naive fixed-rank PCA baseline?
+
+That is the heart of the project. The strategy is only the testing ground. The
+real object of study is the residualization step.
+
+\section*{What Problem the Project Is Solving}
+
+Cross-sectional equity stat-arb usually begins with the idea that stocks move
+for two broad reasons. Some part of a stock's return is common and systematic:
+the market went up, a sector sold off, a style factor moved, or a group of
+names shared the same broad exposure. Another part of the return is
+idiosyncratic: the stock moved more or less than what its common exposures would
+predict. That leftover component is the residual.
+
+Residual mean reversion strategies try to trade that leftover component. If a
+stock looks unusually rich relative to its common factor structure, perhaps it
+should be shorted. If it looks unusually cheap, perhaps it should be bought.
+The entire success of such a strategy depends on how well one separates the
+common component from the residual component. If that separation is poor, then
+the signal is contaminated from the start.
+
+This is where covariance estimation becomes important. To estimate the common
+structure, one often uses PCA on a rolling return panel. But sample covariance
+matrices are noisy in finite samples. If the number of assets is not very small
+relative to the rolling window, empirical eigenvalues and eigenvectors can be
+unstable. A naive PCA decomposition may treat noise-dominated modes as real
+structure, or remove the wrong directions entirely. The project asks whether
+Marchenko--Pastur-style filtering can reduce that problem enough to matter in a
+trading workflow.
+
+\section*{The Core Research Question}
+
+The cleanest version of the question is:
+
+\begin{quote}
+If we hold the universe, dates, signal construction, neutrality constraints,
+turnover rules, and transaction-cost assumptions fixed, and change only the
+residualization method, do we get a stronger residual mean-reversion sleeve from
+RMT-filtered PCA than from raw fixed-rank PCA?
+\end{quote}
+
+That is a meaningful applied research question because it isolates the effect of
+the spectral estimation step itself.
+
+\section*{What Data the Public Repository Uses}
+
+The public repository uses a structured benchmark panel rather than a
+redistributed historical equity universe. This is documented explicitly in
+\texttt{src/sample\_data.py}. The synthetic panel contains 24 equities across 6
+sectors and spans business dates from \texttt{2019-01-02} through
+\texttt{2025-06-30}. The returns are generated from a combination of:
+
+\begin{itemize}
+    \item a market factor
+    \item a style factor
+    \item one sector factor per sector
+    \item a sector-level mean-reversion state
+    \item asset-specific residual noise
+    \item a common cross-sectional residual shock
+\end{itemize}
+
+This design is not trying to pretend that the public data is live market data.
+Its purpose is different. It creates a transparent finite-sample covariance
+estimation problem in which naive PCA can overfit unstable spectral directions,
+while still leaving a residual structure that can be tested systematically. In
+other words, the synthetic benchmark is a methodology testbed, not a production
+claim.
+
+\section*{How the Original Historical Project Relates to the Public Repo}
+
+The original Georgia Tech project used a broader historical equity panel that is
+not redistributed. The preserved summary documents the following approximate
+historical comparison:
+
+\begin{center}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\textwidth} >{\raggedleft\arraybackslash}p{0.14\textwidth} >{\raggedright\arraybackslash}p{0.34\textwidth}@{}}
+\toprule
+\textbf{Method} & \textbf{Approximate net Sharpe} & \textbf{Notes} \\
+\midrule
+Raw PCA residualization & 0.8 & Historical walk-forward comparison baseline \\
+RMT-filtered residualization & 1.3 & Historical walk-forward comparison winner \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+The preserved materials also report max drawdown around \(8\%\) and benchmark
+beta with \(|\beta_{\mathrm{SPY}}| < 0.05\). The public repository therefore has
+two roles:
+
+\begin{itemize}
+    \item it is a reproducible benchmark implementation of the methodology
+    \item it is a preserved documentation layer for the original historical project
+\end{itemize}
+
+It should not be read as claiming that the synthetic panel reproduces the exact
+historical run.
+
+\section*{How the Spectral Methods Differ}
+
+The benchmark compares several methods, but the central comparison is between
+raw PCA residualization and Marchenko--Pastur-filtered residualization.
+
+Raw PCA residualization works as follows. Take a rolling return window, compute
+the correlation structure, perform an eigendecomposition, select a fixed number
+of leading components, reconstruct the common component using those directions,
+and subtract it from the standardized return panel. The result is a matrix of
+residual returns that are supposed to represent stock-specific deviations after
+common structure is removed.
+
+The weakness is that fixed-rank PCA assumes in advance how many factors should
+be treated as real. It also assumes that the top empirical modes are stable
+enough to be trusted. In finite samples, both assumptions can fail.
+
+The RMT version uses the Marchenko--Pastur upper edge as a filtering rule. The
+empirical spectrum of the sample correlation matrix is compared against the
+noise threshold implied by the dimension-to-sample-size ratio. Only eigenvalues
+above that edge are treated as significant common structure. Those selected
+directions are then used to reconstruct the common component, and the remainder
+is treated as the residual panel. In the repo, that logic lives in
+\texttt{src/spectral.py}.
+
+So the new information provided by the RMT step is not a prediction about future
+returns by itself. The new information is an estimate of which spectral modes
+are more likely to reflect real common structure rather than sampling noise.
+That changes the quality of the residuals that feed the downstream trading
+signal.
+
+\section*{How the Trading Signal Is Built}
+
+Once residuals are computed, the project turns them into a cross-sectional
+mean-reversion signal. The residual window is standardized into a recent z-score
+for each asset. The sign convention is mean-reverting: unusually positive
+residuals are treated as candidates to short, and unusually negative residuals
+as candidates to buy. Only the strongest names are selected on each side, so the
+strategy is trading relative dislocations rather than trying to hold every name.
+
+The project then builds a long/short portfolio with several layers of control.
+Weights are made approximately dollar-neutral so that the book is not simply a
+market bet. They are beta-neutralized with respect to the benchmark, which in
+the public repo is analogous to SPY beta control. Gross exposure is normalized,
+and per-position caps are enforced so that the strategy does not concentrate
+heavily in a few names. Some sleeves also blend toward prior weights, which is a
+practical attempt to control turnover.
+
+\section*{How the Backtest Works}
+
+The backtest is intentionally conservative. Portfolio weights chosen at time
+\(t\) are applied to the next period's returns, not to same-day returns. That
+shift matters because it avoids accidental look-ahead bias. Turnover is computed
+from changes in target weights, and one-way transaction cost is charged on that
+turnover. The public benchmark uses a 5 bps one-way cost assumption as its base
+case.
+
+So by the time the strategy is evaluated, the comparison between raw PCA and RMT
+is no longer just a comparison between two residual matrices. It is a comparison
+between two fully implemented, cost-aware, beta-controlled, dollar-neutral
+stat-arb sleeves.
+
+\section*{How the Public Benchmark Is Split}
+
+The public benchmark uses a simple train / validation / holdout structure:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Split} & \textbf{Dates} & \textbf{Purpose} \\
+\midrule
+Train & 2019-01-02 to 2021-12-31 & First-pass design \\
+Validation & 2022-01-03 to 2022-12-30 & Selection of the final spectral sleeve \\
+Holdout & 2023-01-02 to 2025-06-30 & Final public out-of-sample evaluation \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The public selection is validation-only. Among the spectral sleeves, the chosen
+final public sleeve is \texttt{rmt\_filtered\_residual}. The public repo also
+publishes that same strategy again under the name
+\texttt{final\_research\_portfolio} so that review-facing summary tables are
+easy to read.
+
+\section*{What the Public Results Show}
+
+The headline public benchmark table is:
+
+\begin{center}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\textwidth} >{\raggedleft\arraybackslash}p{0.11\textwidth} >{\raggedleft\arraybackslash}p{0.12\textwidth} >{\raggedleft\arraybackslash}p{0.12\textwidth} >{\raggedleft\arraybackslash}p{0.10\textwidth} >{\raggedleft\arraybackslash}p{0.11\textwidth}@{}}
+\toprule
+\textbf{Strategy} & \shortstack{\textbf{Val}\\\textbf{Sharpe}} & \shortstack{\textbf{Holdout}\\\textbf{Sharpe}} & \shortstack{\textbf{Holdout}\\\textbf{Max DD}} & \shortstack{\textbf{Holdout}\\\textbf{Beta}} & \shortstack{\textbf{Holdout}\\\textbf{Turnover}} \\
+\midrule
+Raw PCA Residual & -0.87 & -0.21 & -5.1\% & 0.011 & 1.52 \\
+RMT-Filtered Residual & 1.04 & 1.73 & -2.7\% & -0.004 & 1.54 \\
+Final Research Portfolio & 1.04 & 1.73 & -2.7\% & -0.004 & 1.54 \\
+\bottomrule
+\end{tabular}
+\normalsize
+\end{center}
+
+The direction of the result is clear. In the public benchmark, the raw PCA
+sleeve performs poorly out of sample, while the RMT-filtered sleeve remains
+strongly positive after costs and has better drawdown and beta behavior.
+
+The most important interpretive point is that the intended difference between
+those sleeves is the residualization step. Everything else in the comparison is
+held as constant as possible. This is why the result is meaningful as a research
+finding: it suggests that covariance denoising is not cosmetic in a residual
+mean-reversion strategy. It can materially change the quality of the downstream
+signal.
+
+\section*{What the Cost Sensitivity Tells Us}
+
+The public cost sensitivity table is severe:
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Cost} & \textbf{Holdout Sharpe} & \textbf{Holdout Ann Return} & \textbf{Holdout Max DD} \\
+\midrule
+1 bps & 5.63 & 24.9\% & -1.3\% \\
+5 bps & 1.73 & 6.9\% & -2.7\% \\
+10 bps & -3.36 & -12.0\% & -27.9\% \\
+20 bps & -14.26 & -40.4\% & -73.6\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This is not something to hide. It is one of the most informative parts of the
+project. Residual mean-reversion strategies often trade frequently, and frequent
+trading makes them fragile to execution costs. So the public benchmark should
+not be read as proof of a live deployable edge. It should be read as proof that
+the residual-denoising question matters under a stylized but transparent cost
+model. The strategy's next research problem is clearly turnover reduction and
+better execution realism.
+
+\section*{What the Robustness Checks Say}
+
+The parameter-sensitivity results are also informative. When the rolling window
+is changed by \(\pm 20\%\), the RMT-filtered sleeve remains positive and fairly
+stable on holdout, while the raw PCA sleeve remains much weaker. That matters
+because it suggests the RMT advantage is not coming purely from a knife-edge
+parameter choice.
+
+The regime summaries show that the RMT sleeve remains particularly strong in the
+public benchmark's bull/high-volatility and event-window recovery periods, while
+also avoiding the drawdown severity of the raw PCA version. So the improvement
+is not merely one lucky average over the whole sample; it also appears in the
+way the sleeve behaves across different structural environments.
+
+\section*{What We Can Infer from the Project}
+
+The project supports a few strong conclusions. First, the quality of
+residualization is part of the signal model itself, not just a preprocessing
+detail. If common-structure estimation is noisy, then the residual mean-reversion
+signal can be badly degraded before the trading logic even begins. Second,
+Marchenko--Pastur-style filtering can improve that residualization step in a
+controlled high-dimensional setting. Third, the improvement can survive the
+addition of dollar neutrality, beta control, and transaction costs. Those are
+meaningful research findings even if they are not equivalent to a production
+trading claim.
+
+The project also suggests a more conceptual point: random matrix theory is
+useful here not because it ``predicts returns'' directly, but because it gives a
+better estimate of which covariance directions should be treated as structure and
+which should be treated as noise. That is the real contribution of the theory in
+this context.
+
+\section*{What the Project Does Not Prove}
+
+The public benchmark does not prove a live tradable stat-arb edge. It does not
+fully model borrow fees, short frictions, market impact, or realistic universe
+evolution. It does not replace a point-in-time historical U.S. equity panel. It
+also does not, by itself, fully prove the original Georgia Tech historical
+performance claim. The historical claim is preserved through summary artifacts,
+not through a committed raw output table from the original private run.
+
+That limitation should be stated clearly, because the project is stronger when
+it is interpreted honestly. It is a serious methodological experiment on
+residual-denoising inside a stat-arb workflow. It is not a production-ready
+trading system.
+
+\section*{Conclusion}
+
+The best way to understand the statistical arbitrage project is as a carefully
+structured test of whether better spectral denoising produces better residual
+signals. The public repository shows the full workflow: generate or load a
+return panel, estimate covariance structure, residualize via raw PCA or RMT,
+turn residuals into a long/short mean-reversion signal, impose neutrality and
+beta controls, charge transaction costs, and compare the resulting sleeves on a
+validation / holdout split. The original Georgia Tech project suggests that this
+idea also improved a broader historical run from about 0.8 Sharpe to about 1.3
+Sharpe under comparable constraints. Even where the public benchmark remains
+stylized, the project succeeds in showing that the residualization step itself
+is an intellectually serious and practically important part of a cross-sectional
+stat-arb pipeline.
+
+\end{document}

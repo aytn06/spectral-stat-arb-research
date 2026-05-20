@@ -6,10 +6,13 @@ Public benchmark artifacts:
 - `final_performance_summary.csv`
 - `model_selection_summary.csv`
 - `factor_diagnostics.csv`
+- `eigenvalue_filter_diagnostics.csv`
 - `cost_sensitivity.csv`
 - `parameter_sensitivity.csv`
 - `regime_summary.csv`
 - `public_data_split.csv`
+- `validation_window_correlation.csv`
+- `validation_window_rmt_filtered_correlation.csv`
 
 Preserved original-project summaries:
 

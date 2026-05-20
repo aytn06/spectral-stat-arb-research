@@ -164,6 +164,7 @@ def build_strategy_weights(
                     "family": STRATEGY_FAMILY_MAP[spec.name],
                     "method": spec.method,
                     "n_selected_factors": meta["n_selected_factors"],
+                    "mp_lower_edge": meta["mp_lower_edge"],
                     "mp_upper_edge": meta["mp_upper_edge"],
                     "top_eigenvalue": meta["top_eigenvalue"],
                     "avg_abs_zscore": zscore.abs().mean(),

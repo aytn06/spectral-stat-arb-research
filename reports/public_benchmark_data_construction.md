@@ -96,6 +96,8 @@ The benchmark also includes:
   states
 - prices formed from cumulative returns
 - volumes scaled with realized absolute returns
+- log1p return standardization inside each rolling spectral window before the
+  correlation matrix is estimated
 - deterministic random seed for exact reproducibility
 
 ## What Is Stylized

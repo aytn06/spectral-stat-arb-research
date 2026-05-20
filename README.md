@@ -8,6 +8,7 @@ The public repo includes:
 
 - a reproducible residual-extraction and portfolio-construction pipeline
 - naive PCA and Marchenko-Pastur-filtered spectral comparisons
+- log-return correlation filtering and validation-window eigenspectrum artifacts
 - dollar-neutral, beta-controlled long/short backtests
 - transaction-cost, sensitivity, and regime diagnostics
 - committed figures, CSV artifacts, and a walkthrough notebook/report
@@ -155,6 +156,22 @@ whether the RMT-filtered pipeline behaves better than the raw PCA baseline
 under identical data, costs, neutrality constraints, and walk-forward
 validation.
 
+## Spectral Estimation Details
+
+Inside each rolling window, the repo now follows a more classical
+correlation-filtering setup:
+
+- transform arithmetic returns with `log1p`
+- standardize those log returns asset by asset
+- estimate the rolling correlation matrix on the standardized panel
+- compare the empirical eigenvalues to the Marchenko-Pastur bulk
+- reconstruct the filtered correlation matrix after zeroing discarded modes
+
+This does not change the backtest return convention, which remains a
+close-to-close arithmetic-return backtest. It only sharpens the spectral
+estimation step and makes the RMT filter directly inspectable through committed
+artifacts.
+
 ## Included Methods
 
 | Strategy | Description |
@@ -192,9 +209,9 @@ flowchart TD
 
 | Strategy | Validation Sharpe | Holdout Sharpe | Holdout Max DD | Holdout Beta | Holdout Turnover | Cost |
 |---|---:|---:|---:|---:|---:|---:|
-| Raw PCA Residual | `-1.04` | `-0.29` | `-5.5%` | `0.009` | `1.52` | 5 bps |
-| RMT-Filtered Residual | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
-| Final Research Portfolio | `1.04` | `1.76` | `-2.8%` | `-0.003` | `1.54` | 5 bps |
+| Raw PCA Residual | `-0.87` | `-0.21` | `-5.1%` | `0.011` | `1.52` | 5 bps |
+| RMT-Filtered Residual | `1.04` | `1.73` | `-2.7%` | `-0.004` | `1.54` | 5 bps |
+| Final Research Portfolio | `1.04` | `1.73` | `-2.7%` | `-0.004` | `1.54` | 5 bps |
 
 In this public benchmark, naive fixed-rank PCA underperforms out of sample,
 while the RMT-filtered sleeve remains positive after costs and shows better
@@ -205,16 +222,19 @@ drawdown and beta behavior under the same portfolio rules.
 The public artifact pack includes:
 
 - [results/cost_sensitivity.csv](results/cost_sensitivity.csv)
+- [results/eigenvalue_filter_diagnostics.csv](results/eigenvalue_filter_diagnostics.csv)
 - [results/parameter_sensitivity.csv](results/parameter_sensitivity.csv)
 - [results/regime_summary.csv](results/regime_summary.csv)
+- [results/validation_window_correlation.csv](results/validation_window_correlation.csv)
+- [results/validation_window_rmt_filtered_correlation.csv](results/validation_window_rmt_filtered_correlation.csv)
 - [results/factor_diagnostics.csv](results/factor_diagnostics.csv)
 
 Two notable findings from the committed artifact pack:
 
 - the selected RMT sleeve stays positive under `rolling_window ±20%`, with
-  holdout Sharpe between `1.73` and `1.77`
-- cost sensitivity is severe: holdout Sharpe drops from `5.65` at `1` bp to
-  `1.76` at `5` bps and turns negative at `10` bps
+  holdout Sharpe between `1.63` and `1.76`
+- cost sensitivity is severe: holdout Sharpe drops from `5.63` at `1` bp to
+  `1.73` at `5` bps and turns negative at `10` bps
 
 ## Cost Sensitivity Interpretation
 
@@ -256,6 +276,8 @@ Important limitations:
 - [figures/final_equity_curve.png](figures/final_equity_curve.png)
 - [figures/final_drawdown.png](figures/final_drawdown.png)
 - [figures/rolling_sharpe.png](figures/rolling_sharpe.png)
+- [figures/eigenvalue_filtering.png](figures/eigenvalue_filtering.png)
+- [figures/rmt_filtered_correlation_heatmap.png](figures/rmt_filtered_correlation_heatmap.png)
 - [figures/signal_correlation_heatmap.png](figures/signal_correlation_heatmap.png)
 - [figures/parameter_sensitivity_heatmap.png](figures/parameter_sensitivity_heatmap.png)
 - [figures/regime_breakdown.png](figures/regime_breakdown.png)

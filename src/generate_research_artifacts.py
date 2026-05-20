@@ -16,13 +16,16 @@ from .plots import (
     plot_cost_sensitivity,
     plot_drawdown_comparison,
     plot_equity_curves,
+    plot_eigenvalue_filtering,
     plot_factor_diagnostics,
+    plot_filtered_correlation_comparison,
     plot_parameter_sensitivity_heatmap,
     plot_regime_breakdown,
     plot_rolling_sharpe,
 )
 from .regime import classify_regimes, regime_summary
 from .signals import DISPLAY_NAMES, STRATEGY_FAMILY_MAP, build_strategy_weights
+from .spectral import spectral_snapshot
 from .validation import sensitivity_analysis
 
 
@@ -85,6 +88,13 @@ def save_public_split(config: BacktestConfig, output_path: Path) -> None:
     ).to_csv(output_path, index=False)
 
 
+def validation_window_returns(panel, config: BacktestConfig) -> pd.DataFrame:
+    valid_end = pd.Timestamp(config.valid_end)
+    end_loc = panel.returns.index.get_indexer([valid_end], method="pad")[0]
+    start_loc = max(end_loc - config.rolling_window + 1, 0)
+    return panel.returns.iloc[start_loc : end_loc + 1]
+
+
 def main() -> None:
     ensure_matplotlib_cache_dir()
 
@@ -108,6 +118,45 @@ def main() -> None:
     summary.to_csv(results_dir / "performance_summary.csv", index=False)
     diagnostics.to_csv(results_dir / "factor_diagnostics.csv", index=False)
     save_public_split(config, results_dir / "public_data_split.csv")
+
+    diag_window = validation_window_returns(panel, config)
+    raw_snapshot = spectral_snapshot(
+        window_returns=diag_window,
+        method="raw_pca",
+        fixed_components=config.fixed_pca_factors,
+        min_components=config.min_significant_factors,
+        max_components=config.max_significant_factors,
+    )
+    rmt_snapshot = spectral_snapshot(
+        window_returns=diag_window,
+        method="rmt",
+        fixed_components=config.fixed_pca_factors,
+        min_components=config.min_significant_factors,
+        max_components=config.max_significant_factors,
+    )
+    spectral_diag_rows = []
+    for method_name, snapshot in [("raw_pca", raw_snapshot), ("rmt", rmt_snapshot)]:
+        frame = pd.concat(
+            [
+                snapshot["eigenvalues"],
+                snapshot["filtered_eigenvalues"],
+                snapshot["retained_mask"],
+            ],
+            axis=1,
+        ).reset_index()
+        frame["method"] = method_name
+        frame["window_end"] = diag_window.index[-1]
+        frame["n_assets"] = diag_window.shape[1]
+        frame["window_length"] = diag_window.shape[0]
+        frame["mp_lower_edge"] = snapshot["mp_lower_edge"]
+        frame["mp_upper_edge"] = snapshot["mp_upper_edge"]
+        frame["n_selected_factors"] = int(snapshot["n_selected_factors"])
+        frame["input_transform"] = snapshot["input_transform"]
+        spectral_diag_rows.append(frame)
+    eigen_diag = pd.concat(spectral_diag_rows, ignore_index=True)
+    eigen_diag.to_csv(results_dir / "eigenvalue_filter_diagnostics.csv", index=False)
+    raw_snapshot["correlation"].to_csv(results_dir / "validation_window_correlation.csv")
+    rmt_snapshot["filtered_correlation"].to_csv(results_dir / "validation_window_rmt_filtered_correlation.csv")
 
     validation = split_metrics(summary, "validation")
     holdout = split_metrics(summary, "holdout")
@@ -253,6 +302,12 @@ def main() -> None:
     plot_factor_diagnostics(
         diagnostics[diagnostics["strategy"].isin(["raw_pca_residual", "rmt_filtered_residual", "final_research_portfolio"])],
         figures_dir / "factor_count_timeline.png",
+    )
+    plot_eigenvalue_filtering(eigen_diag, figures_dir / "eigenvalue_filtering.png")
+    plot_filtered_correlation_comparison(
+        raw_snapshot["correlation"],
+        rmt_snapshot["filtered_correlation"],
+        figures_dir / "rmt_filtered_correlation_heatmap.png",
     )
 
 
