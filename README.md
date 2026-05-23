@@ -125,10 +125,28 @@ public historical endpoint:
 - artifact pack: [results/real_us_largecap](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/results/real_us_largecap)
 
 This real panel covers `24` large-cap U.S. names across `6` sectors from
-`2019-05-22` to `2025-06-30`. It is materially harsher than the synthetic
-benchmark: none of the sleeves are profitable under the current settings, but
-the direct RMT-vs-raw comparison still favors RMT on holdout. That extension is
-useful because it separates two questions cleanly:
+`2019-05-22` to `2025-06-30`. It is run with the explicit
+`real_largecap` strategy profile:
+
+```bash
+python -m src.generate_research_artifacts \
+  --input data/real_us_largecap_panel.csv \
+  --results-dir results/real_us_largecap \
+  --figures-dir figures/real_us_largecap \
+  --strategy-profile real_largecap
+```
+
+That real profile adds slower rebalancing and benchmark gating to the
+conservative RMT sleeve rather than silently changing the default synthetic
+benchmark workflow. Under this real-data profile, the validation-selected final
+alias is `rmt_filtered_ma100_slow`, which reaches:
+
+- validation Sharpe `0.42`
+- holdout Sharpe `0.54`
+- holdout max drawdown `-3.8%`
+- holdout average turnover `0.022`
+
+That extension is useful because it separates two questions cleanly:
 
 - does RMT improve residual construction relative to naive PCA?
 - does the resulting daily stat-arb sleeve look deployable on a real panel?

@@ -7,7 +7,7 @@ from .backtest import backtest_many
 from .config import infer_backtest_config
 from .data_loader import build_market_panel, load_panel_data
 from .metrics import summarize_by_split
-from .signals import build_strategy_weights
+from .signals import build_strategy_weights, get_strategy_specs
 
 
 DEFAULT_INPUT = "data/sample_prices.csv"
@@ -25,12 +25,14 @@ def main() -> None:
     parser = build_parser()
     parser.add_argument("--input", default=DEFAULT_INPUT)
     parser.add_argument("--output", default=DEFAULT_OUTPUT)
+    parser.add_argument("--strategy-profile", default="default", choices=["default", "real_largecap"])
     args = parser.parse_args()
 
     df = load_panel_data(args.input)
     panel = build_market_panel(df)
     config = infer_backtest_config(panel.returns.index)
-    weights_by_strategy, _ = build_strategy_weights(panel, config)
+    strategy_specs = get_strategy_specs(args.strategy_profile)
+    weights_by_strategy, _ = build_strategy_weights(panel, config, strategy_specs=strategy_specs)
     backtests = backtest_many(panel.returns, weights_by_strategy, config)
     summary = summarize_by_split(backtests, benchmark_returns=panel.benchmark_returns, config=config)
 

@@ -1,5 +1,5 @@
 strategy,display_name,cost_bps,holdout_sharpe,holdout_max_drawdown,holdout_ann_return,holdout_beta_spy,notes
-final_research_portfolio,Final Research Portfolio,1,-0.9925982923501689,-0.16832168403319636,-0.05360995238693145,-0.0028240557045501047,Public sample sensitivity under the same fixed weights.
-final_research_portfolio,Final Research Portfolio,5,-2.8969594207958527,-0.2642853987441418,-0.14520890986739787,-0.00275981810636043,Public sample sensitivity under the same fixed weights.
-final_research_portfolio,Final Research Portfolio,10,-5.314525871006031,-0.40771416801544935,-0.24738726279771606,-0.0026795211086233354,Public sample sensitivity under the same fixed weights.
-final_research_portfolio,Final Research Portfolio,20,-10.264532044112693,-0.6276121290238678,-0.41667722035539334,-0.0025189271131491413,Public sample sensitivity under the same fixed weights.
+final_research_portfolio,Final Research Portfolio,1,0.6273570348561094,-0.03698649389949249,0.01544953404977023,0.013408662205332806,Public sample sensitivity under the same fixed weights.
+final_research_portfolio,Final Research Portfolio,5,0.5376586505971831,-0.037697251475787286,0.013170360263529801,0.013266724480952091,Public sample sensitivity under the same fixed weights.
+final_research_portfolio,Final Research Portfolio,10,0.42514231506464273,-0.03858508469764088,0.01032828888858739,0.013089302325476187,Public sample sensitivity under the same fixed weights.
+final_research_portfolio,Final Research Portfolio,20,0.19940670186370285,-0.04035870697236532,0.004667057239223782,0.012734458014524387,Public sample sensitivity under the same fixed weights.

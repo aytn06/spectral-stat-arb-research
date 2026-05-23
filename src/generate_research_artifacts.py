@@ -24,7 +24,7 @@ from .plots import (
     plot_rolling_sharpe,
 )
 from .regime import classify_regimes, regime_summary
-from .signals import DISPLAY_NAMES, STRATEGY_FAMILY_MAP, build_strategy_weights
+from .signals import DISPLAY_NAMES, STRATEGY_FAMILY_MAP, build_strategy_weights, get_strategy_specs
 from .spectral import spectral_snapshot
 from .validation import sensitivity_analysis
 
@@ -102,6 +102,7 @@ def main() -> None:
     parser.add_argument("--input", default=DEFAULT_INPUT)
     parser.add_argument("--results-dir", default=DEFAULT_RESULTS_DIR)
     parser.add_argument("--figures-dir", default=DEFAULT_FIGURES_DIR)
+    parser.add_argument("--strategy-profile", default="default", choices=["default", "real_largecap"])
     args = parser.parse_args()
 
     df = load_panel_data(args.input)
@@ -112,7 +113,8 @@ def main() -> None:
     results_dir.mkdir(parents=True, exist_ok=True)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
-    weights_by_strategy, diagnostics = build_strategy_weights(panel, config)
+    strategy_specs = get_strategy_specs(args.strategy_profile)
+    weights_by_strategy, diagnostics = build_strategy_weights(panel, config, strategy_specs=strategy_specs)
     backtests = backtest_many(panel.returns, weights_by_strategy, config)
     summary = summarize_by_split(backtests, benchmark_returns=panel.benchmark_returns, config=config)
     summary.to_csv(results_dir / "performance_summary.csv", index=False)
@@ -218,7 +220,7 @@ def main() -> None:
     final_table["cost_assumption_bps"] = int(config.transaction_cost * 10_000)
     final_table.to_csv(results_dir / "final_performance_summary.csv", index=False)
 
-    sensitivity = sensitivity_analysis(panel, config)
+    sensitivity = sensitivity_analysis(panel, config, strategy_specs=strategy_specs)
     sensitivity.to_csv(results_dir / "parameter_sensitivity.csv", index=False)
 
     cost_rows = []
