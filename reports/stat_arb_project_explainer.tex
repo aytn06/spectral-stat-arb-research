@@ -89,6 +89,58 @@ treated as common structure and stripped out before the remainder is traded as
 a residual mean-reversion signal. So the eigendecomposition is serving signal
 extraction rather than buy-and-hold allocation.
 
+\section*{A Theoretical Null Model for the Residual World}
+
+There is a second theoretical lens that helps explain why this project is not
+just a backtest of PCA versus RMT. After common market, sector, and style
+structure is filtered out, the remaining residual panel is supposed to be much
+closer to stock-specific movement. But then a harder question appears: even if
+there were no real alpha left in that residual world, could a constrained
+portfolio still find some apparently special direction purely because the
+matrix is high-dimensional and noisy?
+
+This is where the user's current theory work fits naturally. If \(R\) denotes a
+return matrix and \(w\) denotes a portfolio vector, then the realized PnL path
+is just the linear image
+\[
+w \mapsto Rw.
+\]
+So a return matrix is a linear operator from portfolio space into path space.
+In the Banach-space formulation, the admissible geometry \(K\) can be read as
+the set of allowed portfolio shapes: leverage limits, long/short balance,
+sector neutrality, sparsity, or other exposure constraints. The output
+geometry \(L\) can be read as the way the PnL path is evaluated: a variance-like
+size, a path norm, or another risk functional.
+
+The lower singular value
+\[
+s^+_{K \to L}(R)
+\]
+then asks, in effect, how small the output can be over all admissible
+portfolios of unit \(K\)-size. When the return matrix is replaced by a pure
+noise Gaussian matrix, the theorem gives the typical scale of what constrained
+portfolios should be able to do under noise alone. The key point is that this
+is not an alpha theorem. Its more precise role is a no-degeneracy guarantee.
+Among all admissible portfolios, the residual matrix should not have a fake
+near-kernel that lets one manufacture an almost-zero residual path purely from
+high-dimensional geometry. In finance language, it helps rule out the classic
+overfit where a portfolio looks extremely low-risk in sample only because the
+covariance structure is ill-conditioned, and then its Sharpe looks artificially
+large because the denominator has collapsed.
+
+That is why this theory is a good conceptual fit for the stat-arb project. It
+supports the claim that the residual world is well-conditioned under the
+portfolio constraints. It makes the backtest more defensible by controlling the
+risk-geometry side of the problem. But it still says nothing by itself about
+expected return or predictive content, so profitability must come from a
+separate signal argument rather than from the smallest singular value alone.
+
+So the bridge between the theory and the project is not that the theorem is a
+hidden alpha engine. The bridge is that RMT filtering tries to clean the
+residual world, while the Banach singular value theory explains what a cleaned
+residual matrix should still look like if it were only noise under realistic
+portfolio constraints.
+
 \section*{The Core Research Question}
 
 The cleanest version of the question is:

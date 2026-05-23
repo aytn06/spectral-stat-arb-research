@@ -178,6 +178,44 @@ Marchenko-Pastur filter answers it with a noise-aware spectral threshold. The
 trading sleeve is then a way to test whether the better residualization rule
 actually matters once costs and exposure controls are imposed.
 
+## Theoretical Null-Model Lens
+
+A second useful interpretation comes from the user's current Banach-space lower
+singular value work. After RMT filtering, the residual panel is supposed to be
+closer to stock-specific movement with the broad common market / sector modes
+removed. A natural follow-up question is then:
+
+> If the residual return matrix were only high-dimensional noise, could a
+> constrained portfolio still find a direction that looks special just because
+> the matrix is large and noisy?
+
+That is where the theory gives a helpful null model. If \(R\) is a return
+matrix and \(w\) is a portfolio vector, then the realized return path is the
+linear image \(Rw\). In that language:
+
+- the admissible set \(K\) represents allowed portfolio shapes
+  (gross exposure, sparsity, long/short structure, neutrality constraints)
+- the output geometry \(L\) represents how the resulting path is judged
+  (variance-like size, path norm, or another risk functional)
+- the lower singular value \(s^+_{K \to L}(R)\) asks how small the output can
+  be over all admissible portfolios with unit \(K\)-size
+
+For a pure-noise Gaussian residual matrix, that quantity gives the typical
+scale of best / worst constrained behavior that should arise from noise alone.
+More specifically, it acts as a no-degeneracy guarantee: among all admissible
+portfolios, none should be able to create an almost-zero residual path just
+because the residual matrix has a fake near-kernel. That matters because a
+classic stat-arb overfit is to find an apparently ultra-low-risk in-sample
+portfolio only because the covariance geometry is ill-conditioned, which can
+artificially inflate Sharpe through the risk denominator.
+
+So the theorem does not prove that the trading sleeve works. Its role is
+conceptual and structural. It says the residual space is well-conditioned under
+the portfolio constraints, so the backtest is less likely to be benefiting from
+spurious low-risk directions created by high-dimensional noise alone. Any alpha
+claim still requires a separate argument or separate evidence that the residual
+signal has genuine predictive content.
+
 ## Spectral Estimation Details
 
 Inside each rolling window, the repo now follows a more classical

@@ -30,6 +30,21 @@ portfolio selection: the practical question is which common spectral modes
 should be removed before the remainder is traded as a residual mean-reversion
 signal.
 
+The user's current Banach-space lower singular value work suggests a second
+interpretive layer. Once broad common factors are stripped out, the residual
+return matrix can be viewed as a linear map \(w \mapsto Rw\) from admissible
+portfolios to realized PnL paths. In that language, the admissible geometry
+\(K\) captures portfolio constraints and the output geometry \(L\) captures how
+the path is measured. The resulting lower singular value \(s^+_{K \to L}(R)\)
+provides a null-model benchmark for what constrained portfolios should be able
+to achieve if the residual panel were only high-dimensional noise. Its concrete
+role is a no-degeneracy guarantee: it rules out fake near-kernels in which a
+constrained portfolio appears almost riskless in sample only because the
+residual matrix is ill-conditioned. That makes the residual backtest more
+defensible, because an inflated Sharpe coming only from a distorted risk
+denominator is less plausible. It still does not prove the strategy works; a
+separate argument is needed for positive predictive content or alpha.
+
 All sleeves use:
 
 - dollar-neutral long/short weights
