@@ -114,6 +114,25 @@ The original Georgia Tech project was closer to a rolling walk-forward study.
 The public repo uses a cleaner validation / holdout split because it is easier
 to audit from GitHub.
 
+## Real Large-Cap Extension
+
+The repo now also includes a local real-data extension built from Nasdaq's
+public historical endpoint:
+
+- helper: [src/fetch_real_data.py](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/src/fetch_real_data.py:1)
+- real panel: [data/real_us_largecap_panel.csv](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/data/real_us_largecap_panel.csv:1)
+- summary note: [reports/real_largecap_run_summary.md](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/reports/real_largecap_run_summary.md:1)
+- artifact pack: [results/real_us_largecap](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/results/real_us_largecap)
+
+This real panel covers `24` large-cap U.S. names across `6` sectors from
+`2019-05-22` to `2025-06-30`. It is materially harsher than the synthetic
+benchmark: none of the sleeves are profitable under the current settings, but
+the direct RMT-vs-raw comparison still favors RMT on holdout. That extension is
+useful because it separates two questions cleanly:
+
+- does RMT improve residual construction relative to naive PCA?
+- does the resulting daily stat-arb sleeve look deployable on a real panel?
+
 ## Public Benchmark Data Construction
 
 The public benchmark is intentionally transparent and stylized. It is generated
