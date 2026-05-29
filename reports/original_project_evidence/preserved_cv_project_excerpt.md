@@ -12,7 +12,9 @@ File modification timestamp observed locally:
 
 ## Why keep this
 
-This is not raw backtest output. It is a preserved external artifact showing that the project was already being described outside the public GitHub repo with the same spectral-stat-arb framing.
+This is not raw backtest output. It is a preserved external note showing that
+the project was already being described outside the public GitHub repo with the
+same spectral-stat-arb framing.
 
 ## Excerpt
 

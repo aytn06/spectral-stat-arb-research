@@ -120,7 +120,7 @@ also limit what can be inferred about live tradability.
 - checking no-lookahead portfolio application
 - comparing fixed-rank PCA against adaptive spectral selection
 - testing sensitivity to turnover costs and rolling-window choices
-- reviewing a clean research workflow with committed artifacts
+- reviewing a clean research workflow with committed results
 
 ## What This Benchmark Is Not Good For
 

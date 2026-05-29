@@ -28,7 +28,7 @@ reproduces the exact original historical dataset.
 A contemporaneous claim snapshot is also preserved in
 [original_project_evidence/preserved_cv_project_excerpt.md](original_project_evidence/preserved_cv_project_excerpt.md).
 
-Additional preserved summary artifacts:
+Additional preserved summary files:
 
 - [original_project_evidence/original_historical_run_summary.md](original_project_evidence/original_historical_run_summary.md)
 - [original_project_evidence/original_results_table.md](original_project_evidence/original_results_table.md)

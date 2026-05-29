@@ -11,7 +11,7 @@ residual mean-reversion under the same portfolio rules.
   project
 - Frequency: daily
 - Period: original walk-forward study period from the Georgia Tech project;
-  exact date boundaries are not preserved in the public artifact pack
+  exact date boundaries are not preserved in the committed benchmark files
 - Benchmark: SPY used as the market-beta reference
 - Costs: `5` bps one-way
 

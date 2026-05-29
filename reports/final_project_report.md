@@ -20,7 +20,7 @@ by `src/sample_data.py`. The full construction note is documented in
 - RMT-filtered residualization
 - conservative RMT sleeve with lower persistence and lower effective turnover
 - log-return correlation filtering inside each rolling spectral window
-- explicit validation-window eigenspectrum and filtered-correlation artifacts
+- explicit validation-window eigenspectrum and filtered-correlation diagnostics
 
 Background intuition: in the classical covariance-eigendecomposition view, a
 portfolio's variance is \(w^\top \Sigma w\), eigenvectors can be interpreted as

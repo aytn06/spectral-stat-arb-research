@@ -1,30 +1,26 @@
 # Spectral Signal Extraction for Statistical Arbitrage
 
-Cross-sectional equity stat-arb research repository built around a Georgia Tech
-project on spectral denoising, residual mean reversion, and cost-aware
-long/short portfolio construction.
+I built this repository around my Georgia Tech project on spectral denoising,
+residual mean reversion, and cost-aware long/short portfolio construction.
 
-The public repo includes:
+The repo includes:
 
 - a reproducible residual-extraction and portfolio-construction pipeline
 - naive PCA and Marchenko-Pastur-filtered spectral comparisons
-- log-return correlation filtering and validation-window eigenspectrum artifacts
+- log-return correlation filtering and validation-window eigenspectrum diagnostics
 - dollar-neutral, beta-controlled long/short backtests
 - transaction-cost, sensitivity, and regime diagnostics
-- committed figures, CSV artifacts, and a walkthrough notebook/report
-- tests and CI for the runnable public benchmark workflow
+- committed figures, CSV results, and a walkthrough notebook/report
+- tests and CI for the runnable benchmark workflow
 
-## Reviewer Takeaway
+## What This Repo Contains
 
-This repository is a stylized, reproducible benchmark for testing PCA versus
-RMT-filtered residual extraction in a cross-sectional stat-arb setting.
-
-The public benchmark uses synthetic/structured equity data so that the
-methodology can be inspected without redistributing private historical data. It
-is not claimed to establish a live tradable edge or reproduce the original
-historical backtest. The goal is to isolate the statistical question: whether
-Marchenko-Pastur filtering can produce cleaner residuals and more stable
-mean-reversion signals than naive fixed-rank PCA under controlled conditions.
+This repository is the runnable version of the project. The included benchmark
+dataset is structured rather than historical, so the code, results, and
+comparisons can be inspected without redistributing private research data. The
+goal is to isolate the statistical question: whether Marchenko-Pastur
+filtering produces cleaner residuals and more stable mean-reversion signals
+than naive fixed-rank PCA under the same portfolio rules.
 
 ## Research Question
 
@@ -41,19 +37,19 @@ emphasizes:
 - beta checks versus SPY
 - parameter and regime robustness diagnostics
 
-## Public Artifact vs. Original Georgia Tech Project
+## Repository Scope
 
 The original project behind the CV line was completed at Georgia Tech from
 **August 2024 to May 2025** and used a broader historical equity panel that is
 not redistributed here.
 
-The public repo instead ships a **structured benchmark panel**:
+The repo itself ships a **structured benchmark panel**:
 
-| Artifact | Purpose |
+| Contents | Purpose |
 |---|---|
 | `data/sample_prices.csv` | Reproducible benchmark panel |
 | `src/` | Research code for residual extraction and backtesting |
-| `results/` | Public benchmark artifact pack plus original-project summaries |
+| `results/` | Benchmark results plus original-project summaries |
 | `figures/` | Committed review-ready plots |
 | `reports/original_project_summary.md` | Preserved summary of the original Georgia Tech project |
 
@@ -92,14 +88,6 @@ python -m src.generate_research_artifacts
 pytest
 ```
 
-Console scripts are also available after editable install:
-
-```bash
-statarb-backtest
-statarb-plots
-statarb-artifacts
-```
-
 ## Public Benchmark Design
 
 The committed public benchmark uses this split:
@@ -122,7 +110,7 @@ public historical endpoint:
 - helper: [src/fetch_real_data.py](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/src/fetch_real_data.py:1)
 - real panel: [data/real_us_largecap_panel.csv](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/data/real_us_largecap_panel.csv:1)
 - summary note: [reports/real_largecap_run_summary.md](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/reports/real_largecap_run_summary.md:1)
-- artifact pack: [results/real_us_largecap](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/results/real_us_largecap)
+- results folder: [results/real_us_largecap](/Users/achintyarayapolavarapu/Documents/Playground/spectral-stat-arb-research/results/real_us_largecap)
 
 This real panel covers `24` large-cap U.S. names across `6` sectors from
 `2019-05-22` to `2025-06-30`. It is run with the explicit
@@ -266,8 +254,8 @@ correlation-filtering setup:
 
 This does not change the backtest return convention, which remains a
 close-to-close arithmetic-return backtest. It only sharpens the spectral
-estimation step and makes the RMT filter directly inspectable through committed
-artifacts.
+estimation step and makes the RMT filter directly inspectable through the
+committed result files.
 
 This choice also cleanly separates two conventions that often get mixed
 together in finance writing: the background eigenportfolio story is usually
@@ -288,11 +276,11 @@ The selected public spectral sleeve is currently:
 
 - `rmt_filtered_residual`
 
-The committed artifact pack exposes that selected sleeve twice:
+The committed result tables expose that selected sleeve twice:
 
 - once under its method label, `rmt_filtered_residual`
 - once as `final_research_portfolio`, which is the selected validation winner
-  carried into the review-facing summary tables
+  carried into the main summary tables
 
 ## Method Flow
 
@@ -320,9 +308,9 @@ In this public benchmark, naive fixed-rank PCA underperforms out of sample,
 while the RMT-filtered sleeve remains positive after costs and shows better
 drawdown and beta behavior under the same portfolio rules.
 
-## Public Robustness Checks
+## Robustness Checks
 
-The public artifact pack includes:
+The repo includes:
 
 - [results/cost_sensitivity.csv](results/cost_sensitivity.csv)
 - [results/eigenvalue_filter_diagnostics.csv](results/eigenvalue_filter_diagnostics.csv)
@@ -332,7 +320,7 @@ The public artifact pack includes:
 - [results/validation_window_rmt_filtered_correlation.csv](results/validation_window_rmt_filtered_correlation.csv)
 - [results/factor_diagnostics.csv](results/factor_diagnostics.csv)
 
-Two notable findings from the committed artifact pack:
+Two notable findings from the committed results:
 
 - the selected RMT sleeve stays positive under `rolling_window ±20%`, with
   holdout Sharpe between `1.63` and `1.76`
@@ -369,9 +357,9 @@ Important limitations:
 - The benchmark is designed to test residual-denoising methodology, not to
   estimate deployable alpha.
 - The original historical-data project is summarized separately, but raw
-  historical data and exact private-run artifacts are not redistributed.
+  historical data and exact private-run files are not redistributed.
 
-## Key Artifacts
+## Key Files
 
 - [results/final_performance_summary.csv](results/final_performance_summary.csv)
 - [results/model_selection_summary.csv](results/model_selection_summary.csv)
@@ -402,7 +390,7 @@ The original Georgia Tech project is summarized in:
 
 The current evidence hierarchy is:
 
-1. runnable public benchmark code and committed artifacts
+1. runnable benchmark code and committed results
 2. preserved written summaries of the original Georgia Tech result
 3. contemporaneous external claim snapshots
 
@@ -415,8 +403,8 @@ What is still missing is a raw original-project output table or screenshot.
 - Execution is simplified to close-to-close returns with one-way turnover
   costs.
 - Capacity, borrow, and impact are not modeled.
-- The public repo should be read as a reproducible research artifact, not a
-  direct production-trading claim.
+- The repo should be read as a reproducible research record, not a direct
+  production-trading claim.
 
 ## Next Research Steps
 

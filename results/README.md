@@ -1,6 +1,6 @@
 # Committed Results
 
-Public benchmark artifacts:
+Benchmark results:
 
 - `performance_summary.csv`
 - `final_performance_summary.csv`

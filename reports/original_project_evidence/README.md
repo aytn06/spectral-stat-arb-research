@@ -1,6 +1,7 @@
 # Original Project Evidence
 
-This folder stores preserved artifacts that reference the original Georgia Tech project.
+This folder stores preserved evidence files that reference the original Georgia
+Tech project.
 
 Currently committed:
 
@@ -13,8 +14,8 @@ Interpretation:
 - This folder currently establishes provenance of the project description.
 - It also preserves a direct summary mapping for the original historical
   raw-PCA-versus-RMT comparison.
-- It does not yet provide the strongest possible evidence artifact, such as a
-  raw historical output table or original screenshot.
+- It does not yet provide the strongest possible evidence file, such as a raw
+  historical output table or original screenshot.
 - The public repo should therefore be read as strongest on methodology and
   implementation, with only summary-level support for the original private
   historical result.

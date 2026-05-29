@@ -7,7 +7,7 @@ from .generate_research_artifacts import main as generate_artifacts_main
 
 def build_parser() -> argparse.ArgumentParser:
     return argparse.ArgumentParser(
-        description="Generate the plotting/report artifact pack for the stat-arb project.",
+        description="Generate the plotting and report files for the stat-arb project.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 

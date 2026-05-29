@@ -35,7 +35,7 @@ Sector layout:
 - Technology: AAPL, MSFT, ORCL, CSCO
 
 Because the Nasdaq endpoint only returned a common history beginning on
-2019-05-22, the split used for the real-panel artifact pack became:
+2019-05-22, the split used for the real-panel results became:
 
 - Train: 2019-05-22 to 2022-02-14
 - Validation: 2022-02-15 to 2023-08-25
@@ -46,7 +46,7 @@ Those dates are recorded in
 
 ## Strategy Profile
 
-The real-data artifact pack is generated with:
+The real-data results are generated with:
 
 ```bash
 python -m src.generate_research_artifacts \

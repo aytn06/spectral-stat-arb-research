@@ -44,7 +44,7 @@ def ensure_matplotlib_cache_dir() -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     return argparse.ArgumentParser(
-        description="Generate public-facing artifact pack for the spectral stat-arb project.",
+        description="Generate the committed result tables and figures for the spectral stat-arb project.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -207,14 +207,14 @@ def main() -> None:
     ].copy()
     final_table["source_strategy"] = final_table["strategy"]
     final_table["selected_on_validation"] = final_table["strategy"].eq(selected_strategy)
-    final_table["artifact_role"] = "benchmark_method"
+    final_table["summary_role"] = "benchmark_method"
 
     selected_alias = model_selection.loc[model_selection["strategy"] == selected_strategy, final_cols].copy()
     selected_alias["source_strategy"] = selected_strategy
     selected_alias["strategy"] = "final_research_portfolio"
     selected_alias["display_name"] = DISPLAY_NAMES["final_research_portfolio"]
     selected_alias["selected_on_validation"] = True
-    selected_alias["artifact_role"] = "selected_portfolio_alias"
+    selected_alias["summary_role"] = "selected_portfolio_alias"
 
     final_table = pd.concat([final_table, selected_alias], ignore_index=True)
     final_table["cost_assumption_bps"] = int(config.transaction_cost * 10_000)

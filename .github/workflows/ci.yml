@@ -27,5 +27,5 @@ jobs:
       - name: Run baseline backtest
         run: python -m src.run_backtest
 
-      - name: Regenerate public artifacts
+      - name: Generate benchmark reports
         run: python -m src.generate_research_artifacts
