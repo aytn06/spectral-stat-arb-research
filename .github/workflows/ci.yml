@@ -1,4 +1,4 @@
-name: CI
+name: tests
 
 on:
   push:
@@ -6,27 +6,28 @@ on:
 
 jobs:
   test:
+    name: test suite
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: setup python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: install
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Run tests
+      - name: tests
         run: pytest -q
 
-      - name: Run baseline backtest
+      - name: backtest
         run: python -m src.run_backtest
 
-      - name: Generate benchmark reports
+      - name: reports
         run: python -m src.build_reports
