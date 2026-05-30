@@ -15,6 +15,11 @@ residual mean-reversion under the same portfolio rules.
 - Benchmark: SPY used as the market-beta reference
 - Costs: `5` bps one-way
 
+The historical panel came from a confidential university database and is not
+redistributed in this repo. This summary file was imported later from my
+private research archive, which is why its git date is newer than the original
+project period.
+
 ## Backtest Protocol
 
 At each date, the original workflow was intended to:

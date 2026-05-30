@@ -4,7 +4,7 @@
 
 Can Marchenko-Pastur filtering improve a residual mean-reversion stat-arb sleeve after dollar-neutrality, beta control, and transaction costs are imposed?
 
-## 2. Public Benchmark
+## 2. Benchmark In This Repo
 
 The repo uses a structured benchmark panel from `2019-01-02` through
 `2025-06-30`, split into train / validation / holdout windows.
@@ -12,6 +12,12 @@ The repo uses a structured benchmark panel from `2019-01-02` through
 The benchmark uses `24` synthetic equities across `6` sectors and is generated
 by `src/sample_data.py`. The full construction note is documented in
 [public_benchmark_data_construction.md](public_benchmark_data_construction.md).
+
+The original Georgia Tech project used a broader historical panel from a
+confidential university database, so I cannot redistribute that source data
+here. I assembled this repo later from my private research archive, which is
+why some summaries and evidence notes have newer commit dates than the original
+project period.
 
 ## 3. Methods
 
@@ -56,7 +62,7 @@ All sleeves use:
 
 Final public selection is validation-only and restricted to the spectral sleeves. The selected sleeve on the committed benchmark is `rmt_filtered_residual`.
 
-## 5. Main Public Result
+## 5. Main Benchmark Result
 
 | Strategy | Validation Sharpe | Holdout Sharpe | Holdout Max DD | Holdout Beta |
 |---|---:|---:|---:|---:|
@@ -78,14 +84,17 @@ would be required before treating the signal as deployable.
 
 ## 7. Relationship to Original Project
 
-The benchmark in this repo is not the original Georgia Tech dataset. It is a reproducible benchmark implementation of the same research question. The original project summary is documented separately in [original_project_summary.md](original_project_summary.md).
+The benchmark in this repo is not the original Georgia Tech dataset. It is a
+reproducible benchmark implementation of the same research question. The
+original project summary is documented separately in
+[original_project_summary.md](original_project_summary.md).
 
 ## 8. Limitation
 
 The benchmark is structured rather than live-market data, and the sleeve remains
 strongly cost-sensitive.
 
-## 9. What This Public Benchmark Does Not Prove
+## 9. What This Benchmark Does Not Prove
 
 This benchmark does not prove a live tradable stat-arb edge. It is a stylized
 implementation of the residual-denoising experiment, not a production-ready

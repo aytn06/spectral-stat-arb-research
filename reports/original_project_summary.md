@@ -3,6 +3,11 @@
 This note summarizes the original Georgia Tech project that the repo is
 based on.
 
+The original historical equity panel came from a confidential university
+database and cannot be redistributed here. I assembled this GitHub repo later
+from my private research archive, which is why some evidence notes and summary
+files have newer commit dates than the original project dates.
+
 The saved project materials report:
 
 - raw PCA residualization: walk-forward Sharpe around `0.8`
@@ -22,7 +27,7 @@ The repo should be read as:
 1. a reproducible benchmark implementation of the same workflow
 2. a saved summary of the original project result
 
-It should not be read as a claim that the committed benchmark in this repo panel
+It should not be read as a claim that the committed benchmark in this repo
 reproduces the exact original historical dataset.
 
 A contemporaneous claim snapshot is also saved in
@@ -52,4 +57,4 @@ Evidence in this repository:
 | `5` bps one-way cost assumption | [original_project_evidence/original_historical_run_summary.md](original_project_evidence/original_historical_run_summary.md) and [../results/original_historical_performance_summary.csv](../results/original_historical_performance_summary.csv) |
 | Max drawdown around `8%` | [original_project_evidence/original_historical_run_summary.md](original_project_evidence/original_historical_run_summary.md) |
 | `|beta_SPY| < 0.05` | [original_project_evidence/original_historical_run_summary.md](original_project_evidence/original_historical_run_summary.md) |
-| Methodology and public implementation | [../README.md](../README.md) and the committed benchmark in this repo code |
+| Methodology and repo implementation | [../README.md](../README.md) and the committed benchmark in this repo code |

@@ -16,11 +16,13 @@ The repo includes:
 ## What This Repo Contains
 
 This repository is the runnable version of the project. The included benchmark
-dataset is structured rather than historical, so the code, results, and
-comparisons can be inspected without redistributing private research data. The
-goal is to isolate the statistical question: whether Marchenko-Pastur
-filtering produces cleaner residuals and more stable mean-reversion signals
-than naive fixed-rank PCA under the same portfolio rules.
+dataset is structured rather than historical because the original historical
+panel came from a confidential university database and cannot be redistributed
+here. The code, results, and comparisons therefore stay inspectable without
+posting restricted data. The goal is to isolate the statistical question:
+whether Marchenko-Pastur filtering produces cleaner residuals and more stable
+mean-reversion signals than naive fixed-rank PCA under the same portfolio
+rules.
 
 ## Research Question
 
@@ -41,7 +43,11 @@ emphasizes:
 
 The original project behind the CV line was completed at Georgia Tech from
 **August 2024 to May 2025** and used a broader historical equity panel that is
-not redistributed here.
+not redistributed here because it came from a confidential university database.
+
+I assembled this GitHub repo later from my private research archive, which is
+why some evidence notes, summaries, and supporting files have newer commit
+dates than the original project itself.
 
 The repo itself ships a **structured benchmark panel**:
 
@@ -88,7 +94,7 @@ python -m src.build_reports
 pytest
 ```
 
-## Public Benchmark Design
+## Benchmark Design In This Repo
 
 The committed benchmark in this repo uses this split:
 
@@ -139,7 +145,7 @@ That extension is useful because it separates two questions cleanly:
 - does RMT improve residual construction relative to naive PCA?
 - does the resulting daily stat-arb sleeve look deployable on a real panel?
 
-## Public Benchmark Data Construction
+## Benchmark Data Construction
 
 The benchmark in this repo is intentionally transparent and stylized. It is generated
 by [src/sample_data.py](src/sample_data.py) and documented in
@@ -341,7 +347,7 @@ In a real implementation, the next research step would be to reduce turnover
 through slower signal decay, thresholded rebalancing, liquidity-aware position
 sizing, and explicit market-impact modeling.
 
-## What This Public Benchmark Does Not Prove
+## What This Benchmark Does Not Prove
 
 This benchmark in this repo does not prove a live tradable stat-arb edge.
 

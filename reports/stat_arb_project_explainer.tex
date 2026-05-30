@@ -172,14 +172,14 @@ sectors and spans business dates from \texttt{2019-01-02} through
   \item a common cross-sectional residual shock
 \end{itemize}
 
-This design is not trying to pretend that the public data is live market data.
+This design is not trying to pretend that the repo benchmark is live market data.
 Its purpose is different. It creates a transparent finite-sample covariance
 estimation problem in which naive PCA can overfit unstable spectral directions,
 while still leaving a residual structure that can be tested systematically. In
 other words, the synthetic benchmark is a methodology testbed, not a production
 claim.
 
-\section*{How the Original Historical Project Relates to the Public Repo}
+\section*{How the Original Historical Project Relates to the Repo}
 
 The original Georgia Tech project used a broader historical equity panel that is
 not redistributed. The saved summary documents the following approximate
@@ -289,13 +289,13 @@ The benchmark in this repo uses a simple train / validation / holdout structure:
 \midrule
 Train & 2019-01-02 to 2021-12-31 & First-pass design \\
 Validation & 2022-01-03 to 2022-12-30 & Selection of the final spectral sleeve \\
-Holdout & 2023-01-02 to 2025-06-30 & Final public out-of-sample evaluation \\
+Holdout & 2023-01-02 to 2025-06-30 & Final repo out-of-sample evaluation \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The public selection is validation-only. Among the spectral sleeves, the chosen
-final public sleeve is \texttt{rmt\_filtered\_residual}. The repo also
+The selection in the repo benchmark is validation-only. Among the spectral sleeves, the chosen
+final sleeve in the repo benchmark is \texttt{rmt\_filtered\_residual}. The repo also
 publishes that same strategy again under the name
 \texttt{final\_research\_portfolio} so that review-facing summary tables are
 easy to read.
@@ -331,7 +331,7 @@ signal.
 
 \section*{What the Cost Sensitivity Tells Us}
 
-The public cost sensitivity table is severe:
+The cost sensitivity table in the repo benchmark is severe:
 
 \begin{center}
 \begin{tabular}{lrrr}

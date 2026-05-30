@@ -3,6 +3,11 @@
 This folder stores saved evidence files that reference the original Georgia
 Tech project.
 
+The original historical panel came from a confidential university database, so
+this folder is for saved summaries and preserved evidence rather than reposted
+raw data. These notes were imported later from my private research archive,
+which is why their git dates may be newer than the original project period.
+
 Currently committed:
 
 - `saved_cv_project_excerpt.md`: excerpt from a saved standalone CV draft that already described the project workflow and spectral comparison

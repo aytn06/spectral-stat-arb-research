@@ -1,4 +1,4 @@
-# Public Benchmark Data Construction
+# Benchmark Data Construction
 
 ## Purpose
 
@@ -132,7 +132,12 @@ also limit what can be inferred about live tradability.
 
 ## Relationship To The Original Project
 
-The original Georgia Tech project used a broader historical equity panel that is
-not redistributed here. This benchmark in this repo should be read as a reproducible
-implementation of the same research question, not as a claim that the committed
-sample is the original dataset.
+The original Georgia Tech project used a broader historical equity panel from a
+confidential university database, so that source data is not redistributed
+here. This benchmark in the repo should be read as a reproducible
+implementation of the same research question, not as a claim that the
+committed sample is the original dataset.
+
+I assembled the repo later from my private research archive, which is why some
+supporting summaries and evidence notes have newer commit dates than the
+original research period.
