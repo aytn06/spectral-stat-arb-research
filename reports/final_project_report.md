@@ -1,119 +1,50 @@
-# Spectral Signal Extraction for Statistical Arbitrage
+# Stat-Arb Project Report
 
-## 1. Question
+This project asks a focused question: if I build a residual mean-reversion
+stat-arb strategy, do I get a better signal from raw PCA residualization or
+from Marchenko-Pastur-filtered residualization?
 
-Can Marchenko-Pastur filtering improve a residual mean-reversion stat-arb sleeve after dollar-neutrality, beta control, and transaction costs are imposed?
+The repo is the runnable version of that idea. The original historical equity
+panel came from a confidential university database, so I cannot post it here.
+That is why the repo uses a structured benchmark panel and, separately, a real
+large-cap extension on public data.
 
-## 2. Benchmark In This Repo
+The workflow is:
 
-The repo uses a structured benchmark panel from `2019-01-02` through
-`2025-06-30`, split into train / validation / holdout windows.
+1. take a rolling window of returns
+2. estimate common structure
+3. remove that structure with either raw PCA or MP-filtered PCA
+4. build residual z-scores
+5. long the most negative residual names and short the most positive ones
+6. apply dollar neutrality, beta control, and transaction costs
 
-The benchmark uses `24` synthetic equities across `6` sectors and is generated
-by `src/sample_data.py`. The full construction note is documented in
-[public_benchmark_data_construction.md](public_benchmark_data_construction.md).
+The benchmark split in the repo is:
 
-The original Georgia Tech project used a broader historical panel from a
-confidential university database, so I cannot redistribute that source data
-here. I assembled this repo later from my private research archive, which is
-why some summaries and evidence notes have newer commit dates than the original
-project period.
+| Split | Dates | Purpose |
+|---|---:|---|
+| Train | 2019-01-02 to 2021-12-31 | first-pass design |
+| Validation | 2022-01-03 to 2022-12-30 | choose the final spectral sleeve |
+| Holdout | 2023-01-02 to 2025-06-30 | final out-of-sample test |
 
-## 3. Methods
-
-- sector-neutral residual baseline
-- naive fixed-rank PCA residualization
-- RMT-filtered residualization
-- conservative RMT sleeve with lower persistence and lower effective turnover
-- log-return correlation filtering inside each rolling spectral window
-- explicit validation-window eigenspectrum and filtered-correlation diagnostics
-
-Background intuition: in the classical covariance-eigendecomposition view, a
-portfolio's variance is \(w^\top \Sigma w\), eigenvectors can be interpreted as
-orthogonal risk directions, and the largest eigenvalue is often market-like.
-This project uses that lens for residual extraction rather than for long-only
-portfolio selection: the practical question is which common spectral modes
-should be removed before the remainder is traded as a residual mean-reversion
-signal.
-
-The user's current Banach-space lower singular value work suggests a second
-interpretive layer. Once broad common factors are stripped out, the residual
-return matrix can be viewed as a linear map \(w \mapsto Rw\) from admissible
-portfolios to realized PnL paths. In that language, the admissible geometry
-\(K\) captures portfolio constraints and the output geometry \(L\) captures how
-the path is measured. The resulting lower singular value \(s^+_{K \to L}(R)\)
-provides a null-model benchmark for what constrained portfolios should be able
-to achieve if the residual panel were only high-dimensional noise. Its concrete
-role is a no-degeneracy guarantee: it rules out fake near-kernels in which a
-constrained portfolio appears almost riskless in sample only because the
-residual matrix is ill-conditioned. That makes the residual backtest more
-defensible, because an inflated Sharpe coming only from a distorted risk
-denominator is less plausible. It still does not prove the strategy works; a
-separate argument is needed for positive predictive content or alpha.
-
-All sleeves use:
-
-- dollar-neutral long/short weights
-- beta checks versus SPY
-- one-day delayed weight application
-- one-way turnover costs of `5` bps
-
-## 4. Selection
-
-Final public selection is validation-only and restricted to the spectral sleeves. The selected sleeve on the committed benchmark is `rmt_filtered_residual`.
-
-## 5. Main Benchmark Result
+The main benchmark comparison is:
 
 | Strategy | Validation Sharpe | Holdout Sharpe | Holdout Max DD | Holdout Beta |
 |---|---:|---:|---:|---:|
 | Raw PCA Residual | `-0.87` | `-0.21` | `-5.1%` | `0.011` |
 | RMT-Filtered Residual | `1.04` | `1.73` | `-2.7%` | `-0.004` |
 
-## 6. Robustness
+So the main result is that, in this benchmark, the RMT-filtered residuals give
+the stronger sleeve under the same portfolio rules.
 
-- `rolling_window_down`: RMT holdout Sharpe `1.76`
-- `rolling_window_up`: RMT holdout Sharpe `1.63`
-- `1` bp cost: holdout Sharpe `5.63`
-- `5` bps cost: holdout Sharpe `1.73`
-- `10` bps cost: holdout Sharpe `-3.36`
+That does not mean the strategy is ready for production. The cost sensitivity
+is strong, and that matters. At `5` bps the strategy still looks good in the
+benchmark, but by `10` bps the picture is much worse.
 
-The benchmark in this repo is intentionally interpreted as a residual-denoising
-experiment rather than a production trading strategy; the cost-sensitivity
-results show that turnover reduction and more realistic execution modeling
-would be required before treating the signal as deployable.
+The repo also includes a real large-cap extension. That run is slower and more
+conservative, and it is useful because it shows the same basic idea on actual
+stocks rather than only on the structured benchmark.
 
-## 7. Relationship to Original Project
-
-The benchmark in this repo is not the original Georgia Tech dataset. It is a
-reproducible benchmark implementation of the same research question. The
-original project summary is documented separately in
-[original_project_summary.md](original_project_summary.md).
-
-## 8. Limitation
-
-The benchmark is structured rather than live-market data, and the sleeve remains
-strongly cost-sensitive.
-
-## 9. What This Benchmark Does Not Prove
-
-This benchmark does not prove a live tradable stat-arb edge. It is a stylized
-implementation of the residual-denoising experiment, not a production-ready
-capacity or execution study.
-
-Important limitations:
-
-- the public panel is synthetic/structured, not a point-in-time historical
- equity universe
-- borrow, impact, short frictions, and realistic universe evolution are not
- fully modeled
-- transaction costs are simplified to a fixed one-way turnover penalty
-- the sleeve is highly cost-sensitive, especially above `5` bps
-- the benchmark is intended to test residual-denoising methodology rather than
- estimate deployable alpha
-
-## 10. Next Steps
-
-- test the same workflow on a point-in-time liquid U.S. equity universe
-- compare RMT filtering with covariance shrinkage alternatives
-- reduce turnover with thresholded rebalancing and slower signal decay
-- add market-impact and liquidity-aware portfolio rules
+The original Georgia Tech result is summarized separately in
+[original_project_summary.md](original_project_summary.md). That summary records
+the historical comparison that motivated the project, while the repo shows the
+full method in runnable form.
