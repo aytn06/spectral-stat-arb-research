@@ -52,6 +52,6 @@ comparison:
 ## Limitations
 
 Raw data is not redistributed here, and the exact private-run output table is
-not currently saved in this repo. This file should therefore be read
-as a saved summary of the original historical run, while the public
-benchmark remains the reproducible implementation of the research workflow.
+not currently saved in this repo. This file should therefore be read as a
+saved summary of the original historical run, while the included benchmark in
+the repo shows the same workflow on runnable data.

@@ -16,7 +16,7 @@ DEFAULT_OUTPUT = "results/performance_summary.csv"
 
 def build_parser() -> argparse.ArgumentParser:
     return argparse.ArgumentParser(
-        description="Run the cross-sectional stat-arb backtest on the public sample.",
+        description="Run the cross-sectional stat-arb backtest on the included dataset.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
