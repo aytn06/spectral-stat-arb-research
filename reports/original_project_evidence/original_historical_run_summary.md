@@ -8,10 +8,10 @@ residual mean-reversion under the same portfolio rules.
 ## Data
 
 - Universe: broader historical equity panel used in the original Georgia Tech
-  project
+ project
 - Frequency: daily
 - Period: original walk-forward study period from the Georgia Tech project;
-  exact date boundaries are not preserved in the committed benchmark files
+ exact date boundaries are not saved in the committed benchmark files
 - Benchmark: SPY used as the market-beta reference
 - Costs: `5` bps one-way
 
@@ -36,7 +36,7 @@ step: fixed-rank raw PCA versus Marchenko-Pastur-filtered PCA.
 
 ## Result
 
-The preserved project materials report the following approximate historical-run
+The saved project materials report the following approximate historical-run
 comparison:
 
 - Raw PCA residual strategy: net Sharpe around `0.8`
@@ -47,6 +47,6 @@ comparison:
 ## Limitations
 
 Raw data is not redistributed here, and the exact private-run output table is
-not currently preserved in this public repo. This file should therefore be read
-as a preserved summary of the original historical run, while the public
+not currently saved in this repo. This file should therefore be read
+as a saved summary of the original historical run, while the public
 benchmark remains the reproducible implementation of the research workflow.

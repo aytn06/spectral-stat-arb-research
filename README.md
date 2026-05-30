@@ -32,7 +32,7 @@ This is a research backtest, not a production trading system. The repo
 emphasizes:
 
 - shifted weights to avoid accidental look-ahead
-- explicit validation / holdout separation for the public benchmark
+- explicit validation / holdout separation for the benchmark in this repo
 - one-way turnover costs
 - beta checks versus SPY
 - parameter and regime robustness diagnostics
@@ -50,7 +50,7 @@ The repo itself ships a **structured benchmark panel**:
 | `data/sample_prices.csv` | Reproducible benchmark panel |
 | `src/` | Research code for residual extraction and backtesting |
 | `results/` | Benchmark results plus original-project summaries |
-| `figures/` | Committed review-ready plots |
+| `figures/` | Committed plots |
 | `reports/original_project_summary.md` | Preserved summary of the original Georgia Tech project |
 
 ## Repository Layout
@@ -84,13 +84,13 @@ pip install -e ".[dev]"
 ```bash
 python -m src.sample_data
 python -m src.run_backtest
-python -m src.generate_research_artifacts
+python -m src.build_reports
 pytest
 ```
 
 ## Public Benchmark Design
 
-The committed public benchmark uses this split:
+The committed benchmark in this repo uses this split:
 
 | Split | Dates | Purpose |
 |---|---:|---|
@@ -99,8 +99,8 @@ The committed public benchmark uses this split:
 | Holdout | 2023-01-02 to 2025-06-30 | Final out-of-sample evaluation |
 
 The original Georgia Tech project was closer to a rolling walk-forward study.
-The public repo uses a cleaner validation / holdout split because it is easier
-to audit from GitHub.
+The repo uses a cleaner validation / holdout split because it is simpler to
+inspect and reproduce.
 
 ## Real Large-Cap Extension
 
@@ -117,11 +117,11 @@ This real panel covers `24` large-cap U.S. names across `6` sectors from
 `real_largecap` strategy profile:
 
 ```bash
-python -m src.generate_research_artifacts \
-  --input data/real_us_largecap_panel.csv \
-  --results-dir results/real_us_largecap \
-  --figures-dir figures/real_us_largecap \
-  --strategy-profile real_largecap
+python -m src.build_reports \
+ --input data/real_us_largecap_panel.csv \
+ --results-dir results/real_us_largecap \
+ --figures-dir figures/real_us_largecap \
+ --strategy-profile real_largecap
 ```
 
 That real profile adds slower rebalancing and benchmark gating to the
@@ -141,7 +141,7 @@ That extension is useful because it separates two questions cleanly:
 
 ## Public Benchmark Data Construction
 
-The public benchmark is intentionally transparent and stylized. It is generated
+The benchmark in this repo is intentionally transparent and stylized. It is generated
 by [src/sample_data.py](src/sample_data.py) and documented in
 [reports/public_benchmark_data_construction.md](reports/public_benchmark_data_construction.md).
 
@@ -152,16 +152,16 @@ Headline construction choices:
 - one market factor, one style factor, and one sector factor per sector
 - a separate sector-level mean-reversion state that creates residual structure
 - asset-specific idiosyncratic residual processes plus a cross-sectional common
-  shock
+ shock
 - a benchmark series generated from the market and style states
 
 Why this benchmark exists:
 
 - It creates a finite-sample covariance-estimation problem in which naive
-  fixed-rank PCA can overfit unstable eigenmodes.
-- It makes the residual-denoising question reproducible from a public repo.
+ fixed-rank PCA can overfit unstable eigenmodes.
+- It makes the residual-denoising question reproducible from a repo.
 - It does **not** claim to replicate live market microstructure or the original
-  Georgia Tech equity panel.
+ Georgia Tech equity panel.
 
 ## Why This Benchmark Is Still Useful
 
@@ -219,11 +219,11 @@ matrix and \(w\) is a portfolio vector, then the realized return path is the
 linear image \(Rw\). In that language:
 
 - the admissible set \(K\) represents allowed portfolio shapes
-  (gross exposure, sparsity, long/short structure, neutrality constraints)
+ (gross exposure, sparsity, long/short structure, neutrality constraints)
 - the output geometry \(L\) represents how the resulting path is judged
-  (variance-like size, path norm, or another risk functional)
+ (variance-like size, path norm, or another risk functional)
 - the lower singular value \(s^+_{K \to L}(R)\) asks how small the output can
-  be over all admissible portfolios with unit \(K\)-size
+ be over all admissible portfolios with unit \(K\)-size
 
 For a pure-noise Gaussian residual matrix, that quantity gives the typical
 scale of best / worst constrained behavior that should arise from noise alone.
@@ -280,20 +280,20 @@ The committed result tables expose that selected sleeve twice:
 
 - once under its method label, `rmt_filtered_residual`
 - once as `final_research_portfolio`, which is the selected validation winner
-  carried into the main summary tables
+ carried into the main summary tables
 
 ## Method Flow
 
 ```mermaid
 flowchart TD
-    A["Equity return panel"] --> B["Rolling sample covariance"]
-    B --> C["Raw PCA residuals"]
-    B --> D["Marchenko-Pastur eigenvalue filtering"]
-    D --> E["RMT-filtered residuals"]
-    C --> F["Residual z-score signals"]
-    E --> F
-    F --> G["Dollar-neutral / beta-controlled portfolio"]
-    G --> H["Walk-forward net returns after costs"]
+  A["Equity return panel"] --> B["Rolling sample covariance"]
+  B --> C["Raw PCA residuals"]
+  B --> D["Marchenko-Pastur eigenvalue filtering"]
+  D --> E["RMT-filtered residuals"]
+  C --> F["Residual z-score signals"]
+  E --> F
+  F --> G["Dollar-neutral / beta-controlled portfolio"]
+  G --> H["Walk-forward net returns after costs"]
 ```
 
 ## Headline Public Benchmark Results
@@ -304,7 +304,7 @@ flowchart TD
 | RMT-Filtered Residual | `1.04` | `1.73` | `-2.7%` | `-0.004` | `1.54` | 5 bps |
 | Final Research Portfolio | `1.04` | `1.73` | `-2.7%` | `-0.004` | `1.54` | 5 bps |
 
-In this public benchmark, naive fixed-rank PCA underperforms out of sample,
+In this benchmark in this repo, naive fixed-rank PCA underperforms out of sample,
 while the RMT-filtered sleeve remains positive after costs and shows better
 drawdown and beta behavior under the same portfolio rules.
 
@@ -323,16 +323,16 @@ The repo includes:
 Two notable findings from the committed results:
 
 - the selected RMT sleeve stays positive under `rolling_window ±20%`, with
-  holdout Sharpe between `1.63` and `1.76`
+ holdout Sharpe between `1.63` and `1.76`
 - cost sensitivity is severe: holdout Sharpe drops from `5.63` at `1` bp to
-  `1.73` at `5` bps and turns negative at `10` bps
+ `1.73` at `5` bps and turns negative at `10` bps
 
 ## Cost Sensitivity Interpretation
 
-The public benchmark is intentionally turnover-sensitive because residual
+The benchmark in this repo is intentionally turnover-sensitive because residual
 mean-reversion strategies trade frequently. The cost-sensitivity table shows
 that the RMT sleeve performs well at `1`-`5` bps but deteriorates under higher
-cost assumptions. The public benchmark is intentionally interpreted as a
+cost assumptions. The benchmark in this repo is intentionally interpreted as a
 residual-denoising experiment rather than a production trading strategy; the
 cost-sensitivity results show that turnover reduction and more realistic
 execution modeling would be required before treating the signal as deployable.
@@ -343,21 +343,21 @@ sizing, and explicit market-impact modeling.
 
 ## What This Public Benchmark Does Not Prove
 
-This public benchmark does not prove a live tradable stat-arb edge.
+This benchmark in this repo does not prove a live tradable stat-arb edge.
 
 Important limitations:
 
 - The public panel is synthetic/structured, not a point-in-time historical
-  equity universe.
+ equity universe.
 - The benchmark does not model borrow fees, short availability, capacity,
-  market impact, or intraday execution.
+ market impact, or intraday execution.
 - Transaction costs are simplified as a fixed one-way cost on turnover.
 - The RMT sleeve is highly cost-sensitive; performance deteriorates under
-  larger cost assumptions.
+ larger cost assumptions.
 - The benchmark is designed to test residual-denoising methodology, not to
-  estimate deployable alpha.
+ estimate deployable alpha.
 - The original historical-data project is summarized separately, but raw
-  historical data and exact private-run files are not redistributed.
+ historical data and exact private-run files are not redistributed.
 
 ## Key Files
 
@@ -386,36 +386,36 @@ The original Georgia Tech project is summarized in:
 - [results/original_project_cost_sensitivity.csv](results/original_project_cost_sensitivity.csv)
 - [results/original_historical_performance_summary.csv](results/original_historical_performance_summary.csv)
 - [reports/original_project_evidence/README.md](reports/original_project_evidence/README.md)
-- [reports/original_project_evidence/preserved_cv_project_excerpt.md](reports/original_project_evidence/preserved_cv_project_excerpt.md)
+- [reports/original_project_evidence/saved_cv_project_excerpt.md](reports/original_project_evidence/saved_cv_project_excerpt.md)
 
 The current evidence hierarchy is:
 
 1. runnable benchmark code and committed results
-2. preserved written summaries of the original Georgia Tech result
+2. saved written summaries of the original Georgia Tech result
 3. contemporaneous external claim snapshots
 
 What is still missing is a raw original-project output table or screenshot.
 
 ## Limitations
 
-- The public benchmark is structured and reproducible, not a redistributed live
-  market dataset.
+- The benchmark in this repo is structured and reproducible, not a redistributed live
+ market dataset.
 - Execution is simplified to close-to-close returns with one-way turnover
-  costs.
+ costs.
 - Capacity, borrow, and impact are not modeled.
 - The repo should be read as a reproducible research record, not a direct
-  production-trading claim.
+ production-trading claim.
 
 ## Next Research Steps
 
 Natural extensions:
 
 1. Replace the synthetic panel with a point-in-time liquid U.S. equity
-   universe.
+  universe.
 2. Add sector-neutral and liquidity-aware constraints.
 3. Model borrow fees, spreads, and market impact.
 4. Compare Marchenko-Pastur filtering with Ledoit-Wolf shrinkage, nonlinear
-   shrinkage, and robust covariance estimators.
+  shrinkage, and robust covariance estimators.
 5. Study turnover reduction through thresholded rebalancing and signal decay.
 6. Evaluate stability across different lookback windows, universe sizes, and
-   market regimes.
+  market regimes.

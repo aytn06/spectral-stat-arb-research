@@ -49,11 +49,11 @@ Those dates are recorded in
 The real-data results are generated with:
 
 ```bash
-python -m src.generate_research_artifacts \
-  --input data/real_us_largecap_panel.csv \
-  --results-dir results/real_us_largecap \
-  --figures-dir figures/real_us_largecap \
-  --strategy-profile real_largecap
+python -m src.build_reports \
+ --input data/real_us_largecap_panel.csv \
+ --results-dir results/real_us_largecap \
+ --figures-dir figures/real_us_largecap \
+ --strategy-profile real_largecap
 ```
 
 That profile keeps the original baseline sleeves for comparison, but adds two
@@ -165,15 +165,15 @@ away from a stylized synthetic benchmark and into an actual equity universe. It
 also sharpens the interpretation:
 
 1. The residualization question remains meaningful. RMT still improves on raw
-   PCA in the direct spectral comparison.
+  PCA in the direct spectral comparison.
 2. The daily, always-on version was too aggressive for this universe.
 3. Slower rebalancing plus simple benchmark gating substantially improve the
-   real-data sleeve without changing the core residual-denoising question.
+  real-data sleeve without changing the core residual-denoising question.
 4. The project now has a better empirical separation between:
-   - methodology quality
-   - and actual deployable performance
+  - methodology quality
+  - and actual deployable performance
 
-The real panel therefore strengthens the repo's credibility in a better way than
+The real panel therefore strengthens the repo's value in a better way than
 the first untuned pass did: it shows both that the baseline version was weak and
 that a validation-driven, lower-turnover real-data profile can produce a
 modestly positive out-of-sample sleeve.

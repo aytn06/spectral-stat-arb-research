@@ -6,7 +6,7 @@ Can Marchenko-Pastur filtering improve a residual mean-reversion stat-arb sleeve
 
 ## 2. Public Benchmark
 
-The public repo uses a structured benchmark panel from `2019-01-02` through
+The repo uses a structured benchmark panel from `2019-01-02` through
 `2025-06-30`, split into train / validation / holdout windows.
 
 The benchmark uses `24` synthetic equities across `6` sectors and is generated
@@ -71,14 +71,14 @@ Final public selection is validation-only and restricted to the spectral sleeves
 - `5` bps cost: holdout Sharpe `1.73`
 - `10` bps cost: holdout Sharpe `-3.36`
 
-The public benchmark is intentionally interpreted as a residual-denoising
+The benchmark in this repo is intentionally interpreted as a residual-denoising
 experiment rather than a production trading strategy; the cost-sensitivity
 results show that turnover reduction and more realistic execution modeling
 would be required before treating the signal as deployable.
 
 ## 7. Relationship to Original Project
 
-The public benchmark is not the original Georgia Tech dataset. It is a reproducible benchmark implementation of the same research question. The original project summary is documented separately in [original_project_summary.md](original_project_summary.md).
+The benchmark in this repo is not the original Georgia Tech dataset. It is a reproducible benchmark implementation of the same research question. The original project summary is documented separately in [original_project_summary.md](original_project_summary.md).
 
 ## 8. Limitation
 
@@ -94,13 +94,13 @@ capacity or execution study.
 Important limitations:
 
 - the public panel is synthetic/structured, not a point-in-time historical
-  equity universe
+ equity universe
 - borrow, impact, short frictions, and realistic universe evolution are not
-  fully modeled
+ fully modeled
 - transaction costs are simplified to a fixed one-way turnover penalty
 - the sleeve is highly cost-sensitive, especially above `5` bps
 - the benchmark is intended to test residual-denoising methodology rather than
-  estimate deployable alpha
+ estimate deployable alpha
 
 ## 10. Next Steps
 

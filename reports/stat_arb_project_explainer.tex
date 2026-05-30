@@ -157,19 +157,19 @@ the spectral estimation step itself.
 
 \section*{What Data the Public Repository Uses}
 
-The public repository uses a structured benchmark panel rather than a
+The repository uses a structured benchmark panel rather than a
 redistributed historical equity universe. This is documented explicitly in
 \texttt{src/sample\_data.py}. The synthetic panel contains 24 equities across 6
 sectors and spans business dates from \texttt{2019-01-02} through
 \texttt{2025-06-30}. The returns are generated from a combination of:
 
 \begin{itemize}
-    \item a market factor
-    \item a style factor
-    \item one sector factor per sector
-    \item a sector-level mean-reversion state
-    \item asset-specific residual noise
-    \item a common cross-sectional residual shock
+  \item a market factor
+  \item a style factor
+  \item one sector factor per sector
+  \item a sector-level mean-reversion state
+  \item asset-specific residual noise
+  \item a common cross-sectional residual shock
 \end{itemize}
 
 This design is not trying to pretend that the public data is live market data.
@@ -182,7 +182,7 @@ claim.
 \section*{How the Original Historical Project Relates to the Public Repo}
 
 The original Georgia Tech project used a broader historical equity panel that is
-not redistributed. The preserved summary documents the following approximate
+not redistributed. The saved summary documents the following approximate
 historical comparison:
 
 \begin{center}
@@ -198,13 +198,13 @@ RMT-filtered residualization & 1.3 & Historical walk-forward comparison winner \
 \normalsize
 \end{center}
 
-The preserved materials also report max drawdown around \(8\%\) and benchmark
-beta with \(|\beta_{\mathrm{SPY}}| < 0.05\). The public repository therefore has
+The saved materials also report max drawdown around \(8\%\) and benchmark
+beta with \(|\beta_{\mathrm{SPY}}| < 0.05\). The repository therefore has
 two roles:
 
 \begin{itemize}
-    \item it is a reproducible benchmark implementation of the methodology
-    \item it is a preserved documentation layer for the original historical project
+  \item it is a reproducible benchmark implementation of the methodology
+  \item it is a saved documentation layer for the original historical project
 \end{itemize}
 
 It should not be read as claiming that the synthetic panel reproduces the exact
@@ -259,7 +259,7 @@ strategy is trading relative dislocations rather than trying to hold every name.
 The project then builds a long/short portfolio with several layers of control.
 Weights are made approximately dollar-neutral so that the book is not simply a
 market bet. They are beta-neutralized with respect to the benchmark, which in
-the public repo is analogous to SPY beta control. Gross exposure is normalized,
+the repo is analogous to SPY beta control. Gross exposure is normalized,
 and per-position caps are enforced so that the strategy does not concentrate
 heavily in a few names. Some sleeves also blend toward prior weights, which is a
 practical attempt to control turnover.
@@ -270,7 +270,7 @@ The backtest is intentionally conservative. Portfolio weights chosen at time
 \(t\) are applied to the next period's returns, not to same-day returns. That
 shift matters because it avoids accidental look-ahead bias. Turnover is computed
 from changes in target weights, and one-way transaction cost is charged on that
-turnover. The public benchmark uses a 5 bps one-way cost assumption as its base
+turnover. The benchmark in this repo uses a 5 bps one-way cost assumption as its base
 case.
 
 So by the time the strategy is evaluated, the comparison between raw PCA and RMT
@@ -280,7 +280,7 @@ stat-arb sleeves.
 
 \section*{How the Public Benchmark Is Split}
 
-The public benchmark uses a simple train / validation / holdout structure:
+The benchmark in this repo uses a simple train / validation / holdout structure:
 
 \begin{center}
 \begin{tabular}{lll}
@@ -295,14 +295,14 @@ Holdout & 2023-01-02 to 2025-06-30 & Final public out-of-sample evaluation \\
 \end{center}
 
 The public selection is validation-only. Among the spectral sleeves, the chosen
-final public sleeve is \texttt{rmt\_filtered\_residual}. The public repo also
+final public sleeve is \texttt{rmt\_filtered\_residual}. The repo also
 publishes that same strategy again under the name
 \texttt{final\_research\_portfolio} so that review-facing summary tables are
 easy to read.
 
 \section*{What the Public Results Show}
 
-The headline public benchmark table is:
+The headline benchmark in this repo table is:
 
 \begin{center}
 \small
@@ -318,7 +318,7 @@ Final Research Portfolio & 1.04 & 1.73 & -2.7\% & -0.004 & 1.54 \\
 \normalsize
 \end{center}
 
-The direction of the result is clear. In the public benchmark, the raw PCA
+The direction of the result is clear. In the benchmark in this repo, the raw PCA
 sleeve performs poorly out of sample, while the RMT-filtered sleeve remains
 strongly positive after costs and has better drawdown and beta behavior.
 
@@ -348,7 +348,7 @@ The public cost sensitivity table is severe:
 
 This is not something to hide. It is one of the most informative parts of the
 project. Residual mean-reversion strategies often trade frequently, and frequent
-trading makes them fragile to execution costs. So the public benchmark should
+trading makes them fragile to execution costs. So the benchmark in this repo should
 not be read as proof of a live deployable edge. It should be read as proof that
 the residual-denoising question matters under a stylized but transparent cost
 model. The strategy's next research problem is clearly turnover reduction and
@@ -363,7 +363,7 @@ because it suggests the RMT advantage is not coming purely from a knife-edge
 parameter choice.
 
 The regime summaries show that the RMT sleeve remains particularly strong in the
-public benchmark's bull/high-volatility and event-window recovery periods, while
+benchmark in this repo's bull/high-volatility and event-window recovery periods, while
 also avoiding the drawdown severity of the raw PCA version. So the improvement
 is not merely one lucky average over the whole sample; it also appears in the
 way the sleeve behaves across different structural environments.
@@ -388,11 +388,11 @@ this context.
 
 \section*{What the Project Does Not Prove}
 
-The public benchmark does not prove a live tradable stat-arb edge. It does not
+The benchmark in this repo does not prove a live tradable stat-arb edge. It does not
 fully model borrow fees, short frictions, market impact, or realistic universe
 evolution. It does not replace a point-in-time historical U.S. equity panel. It
 also does not, by itself, fully prove the original Georgia Tech historical
-performance claim. The historical claim is preserved through summary files,
+performance claim. The historical claim is saved through summary files,
 not through a committed raw output table from the original private run.
 
 That limitation should be stated clearly, because the project is stronger when
@@ -404,13 +404,13 @@ trading system.
 
 The best way to understand the statistical arbitrage project is as a carefully
 structured test of whether better spectral denoising produces better residual
-signals. The public repository shows the full workflow: generate or load a
+signals. The repository shows the full workflow: generate or load a
 return panel, estimate covariance structure, residualize via raw PCA or RMT,
 turn residuals into a long/short mean-reversion signal, impose neutrality and
 beta controls, charge transaction costs, and compare the resulting sleeves on a
 validation / holdout split. The original Georgia Tech project suggests that this
 idea also improved a broader historical run from about 0.8 Sharpe to about 1.3
-Sharpe under comparable constraints. Even where the public benchmark remains
+Sharpe under comparable constraints. Even where the benchmark in this repo remains
 stylized, the project succeeds in showing that the residualization step itself
 is an intellectually serious and practically important part of a cross-sectional
 stat-arb pipeline.

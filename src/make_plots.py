@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import argparse
 
-from .generate_research_artifacts import main as generate_artifacts_main
+from .build_reports import main as build_reports_main
 
 
 def build_parser() -> argparse.ArgumentParser:
     return argparse.ArgumentParser(
-        description="Generate the plotting and report files for the stat-arb project.",
+        description="Build the plotting and report files for the stat-arb project.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
 
 def main() -> None:
     build_parser().parse_args()
-    generate_artifacts_main()
+    build_reports_main()
 
 
 if __name__ == "__main__":

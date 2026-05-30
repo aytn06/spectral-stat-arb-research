@@ -25,7 +25,7 @@ Repository = "https://github.com/aytn06/spectral-stat-arb-research"
 [project.scripts]
 statarb-backtest = "src.run_backtest:main"
 statarb-plots = "src.make_plots:main"
-statarb-artifacts = "src.generate_research_artifacts:main"
+statarb-reports = "src.build_reports:main"
 
 [tool.setuptools]
 packages = ["src"]

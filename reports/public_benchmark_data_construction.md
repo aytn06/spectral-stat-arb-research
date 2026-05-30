@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The public benchmark is a reproducible stylized panel designed to make the
+The benchmark in this repo is a reproducible stylized panel designed to make the
 signal-extraction question inspectable from GitHub. It is not intended to mimic
 the full realism of a live equity stat-arb universe.
 
@@ -93,11 +93,11 @@ correct.
 The benchmark also includes:
 
 - a synthetic SPY-like benchmark series generated from the market and style
-  states
+ states
 - prices formed from cumulative returns
 - volumes scaled with realized absolute returns
 - log1p return standardization inside each rolling spectral window before the
-  correlation matrix is estimated
+ correlation matrix is estimated
 - deterministic random seed for exact reproducibility
 
 ## What Is Stylized
@@ -133,6 +133,6 @@ also limit what can be inferred about live tradability.
 ## Relationship To The Original Project
 
 The original Georgia Tech project used a broader historical equity panel that is
-not redistributed here. This public benchmark should be read as a reproducible
+not redistributed here. This benchmark in this repo should be read as a reproducible
 implementation of the same research question, not as a claim that the committed
 sample is the original dataset.
