@@ -15,18 +15,22 @@ from .plots import (
     plot_correlation_heatmap,
     plot_cost_sensitivity,
     plot_drawdown_comparison,
-    plot_equity_curves,
     plot_eigenvalue_filtering,
+    plot_equity_curves,
     plot_factor_diagnostics,
     plot_filtered_correlation_comparison,
     plot_parameter_sensitivity_heatmap,
+    plot_residual_quality_series,
     plot_regime_breakdown,
     plot_rolling_sharpe,
+    plot_walkforward_method_comparison,
 )
+from .residual_quality import residual_quality_time_series
 from .regime import classify_regimes, regime_summary
 from .signals import DISPLAY_NAMES, STRATEGY_FAMILY_MAP, build_strategy_weights, get_strategy_specs
 from .spectral import spectral_snapshot
 from .validation import sensitivity_analysis
+from .walkforward import walkforward_method_comparison
 
 
 DEFAULT_INPUT = "data/sample_prices.csv"
@@ -120,6 +124,8 @@ def main() -> None:
     summary.to_csv(results_dir / "performance_summary.csv", index=False)
     diagnostics.to_csv(results_dir / "factor_diagnostics.csv", index=False)
     save_public_split(config, results_dir / "public_data_split.csv")
+    quality_df = residual_quality_time_series(panel, config)
+    quality_df.to_csv(results_dir / "residual_quality_series.csv", index=False)
 
     diag_window = validation_window_returns(panel, config)
     raw_snapshot = spectral_snapshot(
@@ -259,6 +265,12 @@ def main() -> None:
                 regime_rows.append(reg_summary)
     regime_df = pd.concat(regime_rows, ignore_index=True)
     regime_df.to_csv(results_dir / "regime_summary.csv", index=False)
+    walkforward_df = walkforward_method_comparison(
+        backtests=backtests,
+        benchmark_returns=panel.benchmark_returns,
+        config=config,
+    )
+    walkforward_df.to_csv(results_dir / "walkforward_method_comparison.csv", index=False)
 
     validation_returns = pd.DataFrame(
         {
@@ -311,6 +323,8 @@ def main() -> None:
         rmt_snapshot["filtered_correlation"],
         figures_dir / "rmt_filtered_correlation_heatmap.png",
     )
+    plot_residual_quality_series(quality_df, figures_dir / "residual_quality.png")
+    plot_walkforward_method_comparison(walkforward_df, figures_dir / "walkforward_method_comparison.png")
 
 
 if __name__ == "__main__":

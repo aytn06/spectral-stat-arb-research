@@ -26,7 +26,9 @@ signal?
 
 The repo contains the residualization code, the PCA versus RMT comparison, the
 long/short portfolio construction logic, the cost and regime diagnostics, and a
-real-stock extension on a large-cap panel.
+real-stock extension on a large-cap panel. It also tracks residual-quality
+metrics through time and compares raw PCA against RMT across repeated
+walk-forward folds.
 
 The core sequence is:
 
@@ -109,6 +111,12 @@ better than the raw PCA residuals under the same portfolio rules.
 
 That does not mean the strategy is ready for production. It means the
 residualization step matters.
+
+The repo now also tracks how the residual space behaves over time. The added
+diagnostics measure things like residual lag-1 autocorrelation, remaining
+cross-sectional correlation, and residual eigenvalue concentration, and they
+compare raw PCA against RMT across repeated validation/holdout folds instead of
+just one split.
 
 ## Cost Sensitivity
 

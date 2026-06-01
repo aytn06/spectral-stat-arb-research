@@ -192,3 +192,43 @@ def plot_filtered_correlation_comparison(
     plt.tight_layout()
     plt.savefig(path, dpi=180)
     plt.close()
+
+
+def plot_residual_quality_series(quality_df: pd.DataFrame, output_path: str | Path) -> None:
+    path = _prepare_output(output_path)
+    if quality_df.empty:
+        return
+    metrics = [
+        ("avg_lag1_autocorr", "Average Lag-1 Residual Autocorrelation"),
+        ("mean_abs_offdiag_corr", "Mean Absolute Residual Correlation"),
+        ("top_residual_eigen_share", "Top Residual Eigenvalue Share"),
+    ]
+    fig, axes = plt.subplots(len(metrics), 1, figsize=(10, 9), sharex=True)
+    for ax, (metric, title) in zip(axes, metrics):
+        for method, group in quality_df.groupby("method"):
+            ordered = group.sort_values("date")
+            ax.plot(ordered["date"], ordered[metric], label=method, linewidth=1.8)
+        ax.set_title(title)
+        ax.legend()
+    axes[-1].set_xlabel("Date")
+    plt.tight_layout()
+    plt.savefig(path, dpi=180)
+    plt.close()
+
+
+def plot_walkforward_method_comparison(fold_df: pd.DataFrame, output_path: str | Path) -> None:
+    path = _prepare_output(output_path)
+    if fold_df.empty:
+        return
+    pivot = fold_df.pivot(index="fold", columns="strategy", values="holdout_sharpe")
+    plt.figure(figsize=(9, 4.5))
+    for strategy in pivot.columns:
+        plt.plot(pivot.index, pivot[strategy], marker="o", linewidth=2, label=strategy)
+    plt.axhline(0.0, color="black", linewidth=0.8, linestyle="--")
+    plt.title("Walk-Forward Raw PCA vs RMT")
+    plt.ylabel("Holdout Sharpe")
+    plt.xlabel("Fold")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(path, dpi=180)
+    plt.close()

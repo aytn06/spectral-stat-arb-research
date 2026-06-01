@@ -7,6 +7,8 @@ Benchmark results:
 - `model_selection_summary.csv`
 - `factor_diagnostics.csv`
 - `eigenvalue_filter_diagnostics.csv`
+- `residual_quality_series.csv`
+- `walkforward_method_comparison.csv`
 - `cost_sensitivity.csv`
 - `parameter_sensitivity.csv`
 - `regime_summary.csv`
