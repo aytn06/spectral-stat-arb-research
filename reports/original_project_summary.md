@@ -1,6 +1,7 @@
 # Original Georgia Tech Project Summary
 
-This note records the original Georgia Tech stat-arb project behind the repo.
+This note is the short record of the original Georgia Tech stat-arb project
+behind the repo.
 
 The original historical equity panel came from a confidential university
 database, so I cannot redistribute it here. The GitHub repo uses a structured
@@ -16,13 +17,13 @@ The saved project materials report the following historical comparison:
 
 The intended comparison was apples-to-apples. Both versions used the same
 historical universe, dates, signal construction, constraints, rebalance
-schedule, and `5` bps one-way cost assumption. The point of the comparison was
-to isolate the residualization step.
+schedule, and `5` bps one-way cost assumption. The whole point was to isolate
+the residualization step.
 
-So this repo should be read in two layers:
+So I think of the repo in two layers:
 
 - the runnable repo shows the method
-- this note preserves the original historical summary
+- this note keeps the original historical summary
 
 Supporting files:
 

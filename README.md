@@ -1,8 +1,8 @@
 # Spectral Signal Extraction for Statistical Arbitrage
 
 I built this project around a Georgia Tech research project on residual
-mean reversion in equities. The main question was whether a cleaner
-residualization step leads to a better stat-arb signal.
+mean reversion in equities. The main question was simple: if I clean up the
+residualization step, do I get a better stat-arb signal?
 
 More specifically: if I remove common market and sector structure with
 Marchenko-Pastur filtering instead of a fixed-rank PCA shortcut, do the
@@ -20,7 +20,7 @@ newer commit dates than the original project period.
 ## The Idea
 
 In a cross-sectional stat-arb strategy, the signal often comes from residual
-mean reversion. The whole project is built around one question: if I change the
+mean reversion. The whole project comes down to one question: if I change the
 way I remove common structure from returns, do I get a better downstream
 signal?
 
@@ -32,14 +32,14 @@ walk-forward folds. I also added a null version of the benchmark where the
 residual alpha is switched off, so the method has to face a cleaner "there is
 no residual edge here" check.
 
-The core sequence is:
+The basic sequence is:
 
 1. remove broad common structure from stock returns
 2. look at what is left over
 3. ask whether unusually large residual moves tend to reverse
 
-The hard part is step 1. If the covariance estimate is noisy, then the
-residuals can be poor. This project compares two ways of doing that step:
+The hard part is step 1. If the covariance estimate is noisy, the residuals can
+be bad. This project compares two ways of doing that step:
 
 - raw fixed-rank PCA
 - Marchenko-Pastur-filtered PCA
@@ -83,8 +83,8 @@ The workflow is:
    costs
 7. apply weights one day later to avoid look-ahead
 
-So the project is not just a covariance exercise. It carries the residuals all
-the way through to a real backtest.
+So this is not just a covariance exercise. I carry the residuals all the way
+through to a real backtest.
 
 ## Included Benchmark Split
 
@@ -112,7 +112,7 @@ The message is simple. In this benchmark, the RMT-filtered residuals behave
 better than the raw PCA residuals under the same portfolio rules.
 
 That does not mean the strategy is ready for production. It means the
-residualization step matters.
+residualization step really matters.
 
 The repo now also tracks how the residual space behaves over time. The added
 diagnostics measure things like residual lag-1 autocorrelation, remaining
@@ -122,12 +122,12 @@ just one split.
 
 I also run the same raw-PCA-versus-RMT comparison on a null benchmark where the
 residual mean-reversion structure is removed. In that setting, neither method
-works. That matters because it shows the repo is not just wired to manufacture
+works. That matters because it shows the repo is not just set up to manufacture
 alpha from any high-dimensional return panel.
 
 ## Cost Sensitivity
 
-The strategy is sensitive to cost, which is exactly the sort of thing a stat
+The strategy is sensitive to cost, which is exactly the kind of thing a stat
 arb project should show honestly.
 
 - `1` bp cost: holdout Sharpe `5.63`
@@ -162,8 +162,8 @@ The saved summary of that original run is:
 - max drawdown around `8%`
 - `|beta_SPY| < 0.05`
 
-So the repo does two jobs at once: it gives a runnable version of the method
-and it preserves a summary of the original historical run.
+So the repo does two jobs at once: it gives a runnable version of the method,
+and it keeps a summary of the original historical run.
 
 ## Real Large-Cap Extension
 
@@ -181,8 +181,8 @@ Headline result for the selected real-data sleeve:
 - holdout max drawdown `-3.8%`
 - holdout average turnover `0.022`
 
-That extension is useful because it shows the same idea on actual stocks,
-separately from the synthetic benchmark.
+That extension helps because it shows the same idea on actual stocks, separate
+from the synthetic benchmark.
 
 ## Run The Project
 
@@ -207,7 +207,7 @@ python -m src.build_reports \
   --strategy-profile real_largecap
 ```
 
-What matters most here is the comparison itself. The repo keeps the residual
-construction, portfolio rules, and costs explicit, then changes the
-residualization step and checks what happens. That makes it a useful research
+What matters most here is the comparison itself. I keep the residual
+construction, portfolio rules, and costs explicit, then change the
+residualization step and see what happens. That makes it a useful research
 record even though it is not a live trading claim.

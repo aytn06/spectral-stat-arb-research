@@ -1,6 +1,6 @@
-# Committed Results
+# Results
 
-Benchmark results:
+This folder has the main benchmark result files:
 
 - `performance_summary.csv`
 - `final_performance_summary.csv`
@@ -17,7 +17,7 @@ Benchmark results:
 - `validation_window_correlation.csv`
 - `validation_window_rmt_filtered_correlation.csv`
 
-The newer diagnostics do two extra checks that were missing before:
+The newer diagnostics add two checks that were missing before:
 
 - `walkforward_method_comparison.csv` repeats the raw-PCA-versus-RMT comparison
   across multiple expanding folds instead of relying on a single split.
@@ -25,7 +25,7 @@ The newer diagnostics do two extra checks that were missing before:
   benchmark with the residual alpha switched off, so the method has to face a
   cleaner no-edge baseline.
 
-Preserved original-project summaries:
+I also kept the original-project summaries here:
 
 - `original_project_performance_summary.csv`
 - `original_project_method_summary.csv`
