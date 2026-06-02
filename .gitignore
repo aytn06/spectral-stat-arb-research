@@ -42,6 +42,7 @@ results/*.csv
 !results/performance_summary.csv
 !results/eigenvalue_filter_diagnostics.csv
 !results/residual_quality_series.csv
+!results/scenario_method_comparison.csv
 !results/validation_window_correlation.csv
 !results/validation_window_rmt_filtered_correlation.csv
 !results/walkforward_method_comparison.csv

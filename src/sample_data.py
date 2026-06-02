@@ -40,7 +40,15 @@ def build_parser() -> argparse.ArgumentParser:
   return argparse.ArgumentParser(description="Generate the public stat-arb sample panel.")
 
 
-def simulate_panel(seed: int = 7) -> pd.DataFrame:
+def simulate_panel(
+  seed: int = 7,
+  residual_persistence_low: float = -0.35,
+  residual_persistence_high: float = -0.10,
+  sector_alpha_loading: float = 0.45,
+  sector_alpha_ar: float = -0.22,
+  sector_alpha_noise: float = 0.0018,
+  common_residual_scale: float = 0.40,
+) -> pd.DataFrame:
   rng = np.random.default_rng(seed)
   dates = pd.bdate_range("2019-01-02", "2025-06-30")
   n_dates = len(dates)
@@ -86,7 +94,7 @@ def simulate_panel(seed: int = 7) -> pd.DataFrame:
   sector_codes = {name: i for i, name in enumerate(sorted(set(sector_names)))}
   sector_betas = np.array([sector_codes[name] for name in sector_names], dtype=float)
   sector_betas = (sector_betas - sector_betas.mean()) / max(sector_betas.std(), 1.0)
-  residual_persistence = rng.uniform(-0.35, -0.10, size=n_assets)
+  residual_persistence = rng.uniform(residual_persistence_low, residual_persistence_high, size=n_assets)
   idio_scale = rng.uniform(0.0040, 0.0080, size=n_assets)
 
   for t in range(1, n_dates):
@@ -94,11 +102,11 @@ def simulate_panel(seed: int = 7) -> pd.DataFrame:
     style[t] = 0.25 * style[t - 1] + 0.006 * rng.normal()
     for _, sector in SECTORS:
       sector_factors[sector][t] = 0.30 * sector_factors[sector][t - 1] + 0.0040 * rng.normal()
-      sector_alpha[sector][t] = -0.22 * sector_alpha[sector][t - 1] + 0.0018 * rng.normal()
+      sector_alpha[sector][t] = sector_alpha_ar * sector_alpha[sector][t - 1] + sector_alpha_noise * rng.normal()
     common_shock = 0.0020 * rng.normal(size=n_assets)
     residuals[t] = (
       residual_persistence * residuals[t - 1]
-      + 0.40 * common_shock
+      + common_residual_scale * common_shock
       + idio_scale * rng.normal(size=n_assets)
     )
 
@@ -110,7 +118,7 @@ def simulate_panel(seed: int = 7) -> pd.DataFrame:
       + load_style[asset_idx] * style
       + 0.10 * sector_betas[asset_idx] * market
       + sector_factors[sector]
-      + 0.45 * sector_alpha[sector]
+      + sector_alpha_loading * sector_alpha[sector]
       + residuals[:, asset_idx]
     )
 
@@ -134,6 +142,18 @@ def simulate_panel(seed: int = 7) -> pd.DataFrame:
         }
       )
   return pd.DataFrame(records)
+
+
+def simulate_null_panel(seed: int = 17) -> pd.DataFrame:
+  return simulate_panel(
+    seed=seed,
+    residual_persistence_low=0.0,
+    residual_persistence_high=0.05,
+    sector_alpha_loading=0.0,
+    sector_alpha_ar=0.0,
+    sector_alpha_noise=0.0,
+    common_residual_scale=0.0,
+  )
 
 
 def main() -> None:

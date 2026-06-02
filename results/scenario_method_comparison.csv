@@ -1,0 +1,5 @@
+scenario,strategy,display_name,holdout_sharpe,holdout_ann_return,holdout_max_drawdown,holdout_beta_spy
+structured_mean_reversion,raw_pca_residual,Raw PCA Residual,-0.21401647141331034,-0.008377450726988145,-0.0509278082573853,0.011297084476338969
+structured_mean_reversion,rmt_filtered_residual,RMT-Filtered Residual,1.7312964193813043,0.0687503986425535,-0.026857699872423924,-0.003856587831362288
+null_residual_noise,raw_pca_residual,Raw PCA Residual,-7.217975497670656,-0.2043470743784418,-0.45113500890397407,0.0014166925379017672
+null_residual_noise,rmt_filtered_residual,RMT-Filtered Residual,-9.987864316370647,-0.31869714065856924,-0.6285768789020485,-0.011229234168806704

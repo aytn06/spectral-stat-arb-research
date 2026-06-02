@@ -27,6 +27,7 @@ from .plots import (
 )
 from .residual_quality import residual_quality_time_series
 from .regime import classify_regimes, regime_summary
+from .sample_data import simulate_null_panel, simulate_panel
 from .signals import DISPLAY_NAMES, STRATEGY_FAMILY_MAP, build_strategy_weights, get_strategy_specs
 from .spectral import spectral_snapshot
 from .validation import sensitivity_analysis
@@ -99,6 +100,39 @@ def validation_window_returns(panel, config: BacktestConfig) -> pd.DataFrame:
     return panel.returns.iloc[start_loc : end_loc + 1]
 
 
+def scenario_method_comparison() -> pd.DataFrame:
+    rows: list[dict[str, object]] = []
+    scenario_builders = {
+        "structured_mean_reversion": simulate_panel,
+        "null_residual_noise": simulate_null_panel,
+    }
+    core_specs = [spec for spec in get_strategy_specs("default") if spec.name in {"raw_pca_residual", "rmt_filtered_residual"}]
+    for scenario_name, builder in scenario_builders.items():
+        scenario_df = builder()
+        scenario_panel = build_market_panel(scenario_df)
+        scenario_config = infer_backtest_config(scenario_panel.returns.index)
+        weights_by_strategy, _ = build_strategy_weights(scenario_panel, scenario_config, strategy_specs=core_specs)
+        backtests = backtest_many(scenario_panel.returns, weights_by_strategy, scenario_config)
+        summary = summarize_by_split(backtests, benchmark_returns=scenario_panel.benchmark_returns, config=scenario_config)
+        holdout = summary[
+            (summary["split"] == "holdout")
+            & (summary["strategy"].isin(["raw_pca_residual", "rmt_filtered_residual"]))
+        ]
+        for _, row in holdout.iterrows():
+            rows.append(
+                {
+                    "scenario": scenario_name,
+                    "strategy": row["strategy"],
+                    "display_name": DISPLAY_NAMES.get(row["strategy"], row["strategy"]),
+                    "holdout_sharpe": row["sharpe"],
+                    "holdout_ann_return": row["ann_return"],
+                    "holdout_max_drawdown": row["max_drawdown"],
+                    "holdout_beta_spy": row["beta_spy"],
+                }
+            )
+    return pd.DataFrame(rows)
+
+
 def main() -> None:
     ensure_matplotlib_cache_dir()
 
@@ -124,7 +158,7 @@ def main() -> None:
     summary.to_csv(results_dir / "performance_summary.csv", index=False)
     diagnostics.to_csv(results_dir / "factor_diagnostics.csv", index=False)
     save_public_split(config, results_dir / "public_data_split.csv")
-    quality_df = residual_quality_time_series(panel, config)
+    quality_df = residual_quality_time_series(panel, config, step=20)
     quality_df.to_csv(results_dir / "residual_quality_series.csv", index=False)
 
     diag_window = validation_window_returns(panel, config)
@@ -271,6 +305,8 @@ def main() -> None:
         config=config,
     )
     walkforward_df.to_csv(results_dir / "walkforward_method_comparison.csv", index=False)
+    scenario_df = scenario_method_comparison()
+    scenario_df.to_csv(results_dir / "scenario_method_comparison.csv", index=False)
 
     validation_returns = pd.DataFrame(
         {

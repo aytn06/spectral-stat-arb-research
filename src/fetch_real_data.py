@@ -34,12 +34,12 @@ DEFAULT_END = "2025-06-30"
 DEFAULT_BENCHMARK = "SPY"
 
 REAL_LARGE_CAP_UNIVERSE = {
-    "communication_services": ["GOOGL", "META", "NFLX", "DIS"],
-    "consumer": ["WMT", "HD", "MCD", "COST"],
-    "financials": ["JPM", "BAC", "GS", "BLK"],
-    "healthcare": ["JNJ", "MRK", "ABBV", "PFE"],
-    "industrials": ["HON", "CAT", "UPS", "UNP"],
-    "technology": ["AAPL", "MSFT", "ORCL", "CSCO"],
+    "communication_services": ["GOOGL", "META", "NFLX", "DIS", "CMCSA", "TMUS", "T", "VZ"],
+    "consumer": ["WMT", "HD", "MCD", "COST", "NKE", "SBUX", "LOW", "TJX"],
+    "financials": ["JPM", "BAC", "GS", "BLK", "C", "MS", "SCHW", "AXP"],
+    "healthcare": ["JNJ", "MRK", "ABBV", "PFE", "UNH", "ABT", "BMY", "LLY"],
+    "industrials": ["HON", "CAT", "UPS", "UNP", "DE", "LMT", "GE", "ETN"],
+    "technology": ["AAPL", "MSFT", "ORCL", "CSCO", "NVDA", "ADBE", "CRM", "QCOM"],
 }
 
 
@@ -103,7 +103,7 @@ def fetch_nasdaq_history(symbol: str, start: str, end: str) -> pd.DataFrame:
     return frame.sort_values("date").reset_index(drop=True)
 
 
-def build_real_panel(start: str, end: str, benchmark: str) -> pd.DataFrame:
+def build_real_panel(start: str, end: str, benchmark: str, coverage_output: Path | None = None) -> pd.DataFrame:
     start_ts = pd.Timestamp(start)
     end_ts = pd.Timestamp(end)
 
@@ -113,7 +113,7 @@ def build_real_panel(start: str, end: str, benchmark: str) -> pd.DataFrame:
     benchmark_dates = benchmark_df["date"].drop_duplicates().sort_values()
 
     rows: list[pd.DataFrame] = []
-    selected_symbols: list[str] = []
+    coverage_rows: list[dict[str, object]] = []
     for sector, tickers in REAL_LARGE_CAP_UNIVERSE.items():
         for ticker in tickers:
             hist = fetch_nasdaq_history(ticker, start=start, end=end)
@@ -121,27 +121,35 @@ def build_real_panel(start: str, end: str, benchmark: str) -> pd.DataFrame:
             hist["ticker"] = ticker
             hist["sector"] = sector
             merged = benchmark_df.merge(hist, on="date", how="left")
-            # Require a full history over the selected benchmark window.
-            if merged[["close", "volume"]].isna().any().any():
-                raise RuntimeError(
-                    f"{ticker} does not have a complete Nasdaq history from {start} to {end}."
-                )
             rows.append(merged[["date", "ticker", "sector", "close", "volume", "benchmark_close"]])
-            selected_symbols.append(ticker)
+            coverage_rows.append(
+                {
+                    "ticker": ticker,
+                    "sector": sector,
+                    "coverage_ratio": 1.0 - merged["close"].isna().mean(),
+                    "start_date": hist["date"].min() if not hist.empty else pd.NaT,
+                    "end_date": hist["date"].max() if not hist.empty else pd.NaT,
+                }
+            )
 
     panel = pd.concat(rows, ignore_index=True).sort_values(["date", "ticker"]).reset_index(drop=True)
-    expected_rows = len(benchmark_dates) * len(selected_symbols)
-    if len(panel) != expected_rows:
-        raise RuntimeError(
-            f"Unexpected panel size: got {len(panel)} rows, expected {expected_rows}."
-        )
+    coverage = pd.DataFrame(coverage_rows).sort_values(["sector", "coverage_ratio", "ticker"], ascending=[True, False, True])
+    if coverage_output is not None:
+        coverage_output.parent.mkdir(parents=True, exist_ok=True)
+        coverage.to_csv(coverage_output, index=False)
     return panel
 
 
 def main() -> None:
     args = build_parser().parse_args()
-    panel = build_real_panel(start=args.start, end=args.end, benchmark=args.benchmark)
     output = Path(args.output)
+    coverage_output = output.with_name("real_us_largecap_coverage.csv")
+    panel = build_real_panel(
+        start=args.start,
+        end=args.end,
+        benchmark=args.benchmark,
+        coverage_output=coverage_output,
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
     panel.to_csv(output, index=False)
     print(

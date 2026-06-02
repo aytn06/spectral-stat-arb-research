@@ -34,8 +34,12 @@ def build_market_panel(df: pd.DataFrame) -> MarketPanel:
         .set_index("ticker")["sector"]
     )
     benchmark = df.groupby("date")["benchmark_close"].first().sort_index()
-    returns = prices.pct_change().fillna(0.0)
-    benchmark_returns = benchmark.pct_change().fillna(0.0)
+    returns = prices.pct_change(fill_method=None)
+    if not returns.empty:
+        returns.iloc[0] = 0.0
+    benchmark_returns = benchmark.pct_change(fill_method=None)
+    if not benchmark_returns.empty:
+        benchmark_returns.iloc[0] = 0.0
     return MarketPanel(
         prices=prices,
         returns=returns,

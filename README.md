@@ -28,7 +28,9 @@ The repo contains the residualization code, the PCA versus RMT comparison, the
 long/short portfolio construction logic, the cost and regime diagnostics, and a
 real-stock extension on a large-cap panel. It also tracks residual-quality
 metrics through time and compares raw PCA against RMT across repeated
-walk-forward folds.
+walk-forward folds. I also added a null version of the benchmark where the
+residual alpha is switched off, so the method has to face a cleaner "there is
+no residual edge here" check.
 
 The core sequence is:
 
@@ -118,6 +120,11 @@ cross-sectional correlation, and residual eigenvalue concentration, and they
 compare raw PCA against RMT across repeated validation/holdout folds instead of
 just one split.
 
+I also run the same raw-PCA-versus-RMT comparison on a null benchmark where the
+residual mean-reversion structure is removed. In that setting, neither method
+works. That matters because it shows the repo is not just wired to manufacture
+alpha from any high-dimensional return panel.
+
 ## Cost Sensitivity
 
 The strategy is sensitive to cost, which is exactly the sort of thing a stat
@@ -129,6 +136,15 @@ arb project should show honestly.
 
 So the signal looks much weaker once trading frictions get large. That is an
 important limitation, not something to hide.
+
+Useful files for that comparison:
+
+- [results/final_performance_summary.csv](results/final_performance_summary.csv)
+- [results/residual_quality_series.csv](results/residual_quality_series.csv)
+- [results/walkforward_method_comparison.csv](results/walkforward_method_comparison.csv)
+- [results/scenario_method_comparison.csv](results/scenario_method_comparison.csv)
+- [figures/residual_quality.png](figures/residual_quality.png)
+- [figures/walkforward_method_comparison.png](figures/walkforward_method_comparison.png)
 
 ## Notes On The Original Run
 
@@ -152,7 +168,11 @@ and it preserves a summary of the original historical run.
 ## Real Large-Cap Extension
 
 The repo also includes a real-stock extension on a public large-cap panel. That
-run uses a slower profile with lower turnover and benchmark gating.
+run uses a slower profile with lower turnover and benchmark gating. It no
+longer assumes that every name has a perfect full-history panel. At each
+rebalance date, the strategy works with the names that have enough recent
+history and then keeps only the most liquid subset, which is closer to how a
+real research pipeline would treat a changing universe.
 
 Headline result for the selected real-data sleeve:
 

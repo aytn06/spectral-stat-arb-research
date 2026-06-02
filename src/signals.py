@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import sqrt
 
 import pandas as pd
@@ -49,6 +49,8 @@ class StrategySpec:
     max_components: int | None = None
     rebalance_interval: int = 1
     market_filter: str | None = None
+    liquidity_top_n_assets: int | None = None
+    min_assets: int | None = None
 
 
 STRATEGY_SPECS = [
@@ -97,7 +99,11 @@ def get_strategy_specs(profile: str = "default") -> list[StrategySpec]:
     if profile == "default":
         return list(STRATEGY_SPECS)
     if profile == "real_largecap":
-        return [*STRATEGY_SPECS, *REAL_LARGECAP_ADDITIONAL_SPECS]
+        liquidity_filtered = [
+            replace(spec, liquidity_top_n_assets=16, min_assets=12)
+            for spec in STRATEGY_SPECS
+        ]
+        return [*liquidity_filtered, *REAL_LARGECAP_ADDITIONAL_SPECS]
     raise ValueError(f"Unknown strategy profile: {profile}")
 
 
@@ -155,6 +161,25 @@ def clip_and_scale(weights: pd.Series, target_gross: float, max_position: float)
     return weights - weights.mean()
 
 
+def select_eligible_assets(
+    returns_window: pd.DataFrame,
+    price_window: pd.DataFrame,
+    volume_window: pd.DataFrame,
+    liquidity_top_n_assets: int | None,
+    min_assets: int,
+) -> list[str]:
+    complete = returns_window.columns[~returns_window.isna().any(axis=0)]
+    if len(complete) == 0:
+        return []
+    if liquidity_top_n_assets is None or len(complete) <= liquidity_top_n_assets:
+        return complete.tolist() if len(complete) >= min_assets else []
+
+    trailing_dollar_volume = (price_window[complete] * volume_window[complete]).mean(axis=0)
+    ranked = trailing_dollar_volume.sort_values(ascending=False).index.tolist()
+    selected = ranked[:liquidity_top_n_assets]
+    return selected if len(selected) >= min_assets else []
+
+
 def build_strategy_weights(
     panel: MarketPanel,
     config: BacktestConfig,
@@ -189,6 +214,8 @@ def build_strategy_weights(
             top_n = int(strategy_param(spec, config, "top_n"))
             target_gross = float(strategy_param(spec, config, "target_gross"))
             max_position = float(strategy_param(spec, config, "max_position"))
+            liquidity_top_n_assets = spec.liquidity_top_n_assets
+            min_assets = spec.min_assets or max(top_n * 2, 8)
             fixed_components = spec.fixed_components if spec.fixed_components is not None else config.fixed_pca_factors
             min_components = (
                 int(spec.min_components) if spec.min_components is not None else config.min_significant_factors
@@ -202,15 +229,32 @@ def build_strategy_weights(
                 weights_by_strategy[spec.name].loc[signal_date] = previous[spec.name]
                 continue
 
+            return_window = returns.iloc[idx - rolling_window : idx]
+            price_window = panel.prices.iloc[idx - rolling_window : idx]
+            volume_window = panel.volumes.iloc[idx - rolling_window : idx]
+            eligible_assets = select_eligible_assets(
+                returns_window=return_window,
+                price_window=price_window,
+                volume_window=volume_window,
+                liquidity_top_n_assets=liquidity_top_n_assets,
+                min_assets=min_assets,
+            )
+            if len(eligible_assets) < min_assets:
+                zeroed = pd.Series(0.0, index=returns.columns, dtype=float)
+                weights_by_strategy[spec.name].loc[signal_date] = zeroed
+                previous[spec.name] = zeroed
+                continue
+
             cache_key = (
                 spec.method,
                 rolling_window,
                 fixed_components,
                 min_components,
                 max_components,
+                tuple(eligible_assets),
             )
             if cache_key not in residual_cache:
-                window = returns.iloc[idx - rolling_window : idx]
+                window = return_window[eligible_assets]
                 if window.isna().any().any():
                     residual_cache[cache_key] = None
                 else:
@@ -229,9 +273,9 @@ def build_strategy_weights(
 
             residuals, meta = cached
             if spec.method == "rmt":
-                sector_key = ("sector", rolling_window, fixed_components, min_components, max_components)
+                sector_key = ("sector", rolling_window, fixed_components, min_components, max_components, tuple(eligible_assets))
                 if sector_key not in residual_cache:
-                    sector_window = returns.iloc[idx - rolling_window : idx]
+                    sector_window = return_window[eligible_assets]
                     if sector_window.isna().any().any():
                         residual_cache[sector_key] = None
                     else:
@@ -258,23 +302,27 @@ def build_strategy_weights(
 
             alpha = (-zscore).where(zscore.abs() >= spec.entry_zscore, 0.0)
             target = select_long_short(alpha, top_n=top_n)
-            target = beta_neutralize(target, current_betas)
+            current_betas_subset = current_betas.reindex(eligible_assets)
+            target = beta_neutralize(target, current_betas_subset)
             target = clip_and_scale(target, target_gross=target_gross, max_position=max_position)
 
             rebalance_due = (idx - rolling_window) % rebalance_interval == 0
             market_filter_name = spec.market_filter or "always_on"
             filter_value = float(market_filters[market_filter_name].loc[signal_date])
             if not rebalance_due:
-                blended = previous[spec.name]
+                blended = previous[spec.name].reindex(eligible_assets).fillna(0.0)
             elif filter_value <= 0.0:
-                blended = pd.Series(0.0, index=returns.columns, dtype=float)
+                blended = pd.Series(0.0, index=eligible_assets, dtype=float)
             else:
-                blended = (1.0 - spec.blend_prev) * target + spec.blend_prev * previous[spec.name]
-                blended = beta_neutralize(blended, current_betas)
+                prev_subset = previous[spec.name].reindex(eligible_assets).fillna(0.0)
+                blended = (1.0 - spec.blend_prev) * target + spec.blend_prev * prev_subset
+                blended = beta_neutralize(blended, current_betas_subset)
                 blended = clip_and_scale(blended, target_gross=target_gross, max_position=max_position)
 
-            weights_by_strategy[spec.name].loc[signal_date] = blended
-            previous[spec.name] = blended
+            full_blended = pd.Series(0.0, index=returns.columns, dtype=float)
+            full_blended.loc[eligible_assets] = blended
+            weights_by_strategy[spec.name].loc[signal_date] = full_blended
+            previous[spec.name] = full_blended
             diagnostics.append(
                 {
                     "date": signal_date,
@@ -286,7 +334,8 @@ def build_strategy_weights(
                     "mp_upper_edge": meta["mp_upper_edge"],
                     "top_eigenvalue": meta["top_eigenvalue"],
                     "avg_abs_zscore": zscore.abs().mean(),
-                    "n_active_positions": int((blended != 0).sum()),
+                    "n_active_positions": int((full_blended != 0).sum()),
+                    "n_eligible_assets": len(eligible_assets),
                     "rolling_window_used": rolling_window,
                     "residual_z_window_used": residual_z_window,
                     "rebalance_interval": rebalance_interval,

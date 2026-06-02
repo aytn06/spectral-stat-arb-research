@@ -9,12 +9,21 @@ Benchmark results:
 - `eigenvalue_filter_diagnostics.csv`
 - `residual_quality_series.csv`
 - `walkforward_method_comparison.csv`
+- `scenario_method_comparison.csv`
 - `cost_sensitivity.csv`
 - `parameter_sensitivity.csv`
 - `regime_summary.csv`
 - `public_data_split.csv`
 - `validation_window_correlation.csv`
 - `validation_window_rmt_filtered_correlation.csv`
+
+The newer diagnostics do two extra checks that were missing before:
+
+- `walkforward_method_comparison.csv` repeats the raw-PCA-versus-RMT comparison
+  across multiple expanding folds instead of relying on a single split.
+- `scenario_method_comparison.csv` reruns the core comparison on a null
+  benchmark with the residual alpha switched off, so the method has to face a
+  cleaner no-edge baseline.
 
 Preserved original-project summaries:
 
